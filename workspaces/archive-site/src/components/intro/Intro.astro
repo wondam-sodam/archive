@@ -62,13 +62,13 @@ const stateKeys = ['idle_closed', 'opening', 'active'] as const;
 <style>
   .intro {
     --vh: calc(100svh - var(--header-h));
-    --zoom-run: 90svh; /* 스크롤 줌에 쓰는 거리 (강제 잠금 없음) */
+    --zoom-run: 70svh; /* 스크롤 줌에 쓰는 거리 (강제 잠금 없음) */
     position: relative;
     height: calc(var(--vh) + var(--zoom-run));
     background: var(--cream);
   }
   .intro-sticky { position: sticky; top: var(--header-h); height: var(--vh); display: flex; flex-direction: column; overflow: hidden; }
-  .intro-viewport { position: relative; flex: 1 1 auto; min-height: 0; overflow: hidden; background: #f6e9e6; border-bottom: 1px solid var(--rule); }
+  .intro-viewport { position: relative; flex: 1 1 auto; min-height: 0; overflow: hidden; background: #f6e9e6; border-bottom: 1px solid rgb(48 45 57 / var(--caption-fade, 1)); }
 
   /* zoomer = 스크롤 줌 변환(뷰포트 좌표, 원점 0 0) / stage = 배경 원본(1672×941) 좌표계, 화면을 덮도록(cover) 가운데 정렬 */
   .intro-viewport { container-type: size; }

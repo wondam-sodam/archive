@@ -84,7 +84,9 @@ const index = days.map(toIndexEntry);
 </section>
 
 <style>
-  .archive { padding: clamp(40px, 7vw, 88px) 0 clamp(48px, 8vw, 96px); scroll-margin-top: var(--header-h); }
+  .archive { position: relative; z-index: 1; background: var(--cream); padding: clamp(40px, 7vw, 88px) 0 clamp(48px, 8vw, 96px); scroll-margin-top: var(--header-h); }
+  /* 줌이 끝나 화면이 크림색으로 덮인 뒤 아카이브가 곧바로 올라오도록 인트로 끝부분과 겹침 (PC, 모션 허용 시) */
+  @media (min-width: 701px) and (prefers-reduced-motion: no-preference) { :global([data-intro]:not([data-static])) ~ .archive { margin-top: -25svh; } }
   .archive-head { display: flex; flex-wrap: wrap; align-items: end; justify-content: space-between; gap: 20px 40px; padding-bottom: 20px; border-bottom: 1px solid var(--rule); }
   .archive-title { font-family: var(--font-display); font-weight: 400; font-size: clamp(28px, 4vw, 44px); line-height: 1.1; margin-top: 6px; }
   .search { flex: 1 1 340px; max-width: 520px; }

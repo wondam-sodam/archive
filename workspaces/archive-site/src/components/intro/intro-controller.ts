@@ -108,7 +108,7 @@ function setupZoom(root: HTMLElement, stage: HTMLElement, fill: HTMLElement, vie
   function update() {
     ticking = false;
     const p = progress();
-    const e = easeInOut(clamp01(p / 0.92));
+    const e = easeInOut(clamp01(p / 0.8));
     const z = 1 + (S - 1) * e;
     // 화면 중심 C 가 뷰포트 중심 V 로 이동하도록
     const cx = C.x + (V.x - C.x) * e;
@@ -117,7 +117,7 @@ function setupZoom(root: HTMLElement, stage: HTMLElement, fill: HTMLElement, vie
     // stage 의 transform-origin 은 0 0 기준으로 계산 (CSS에서 data-zoomable 시 원점 변경)
     stage.style.setProperty('--tx', `${(cx - z * C.x).toFixed(2)}px`);
     stage.style.setProperty('--ty', `${(cy - z * C.y).toFixed(2)}px`);
-    const f = clamp01((p - 0.78) / 0.2);
+    const f = clamp01((p - 0.5) / 0.3);
     fill.style.setProperty('--fill', f.toFixed(3));
     root.style.setProperty('--caption-fade', (1 - f).toFixed(3));
     root.toggleAttribute('data-zooming', p > 0.01);
