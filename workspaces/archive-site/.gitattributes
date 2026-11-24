@@ -1,0 +1,9 @@
+# 관리자 도구가 LF로 쓰는 파일이 OS마다 바뀌지 않도록 고정
+*.json text eol=lf
+*.mjs text eol=lf
+*.ts text eol=lf
+*.astro text eol=lf
+*.css text eol=lf
+*.md text eol=lf
+*.webp binary
+*.png binary
