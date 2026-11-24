@@ -1,0 +1,64 @@
+---
+import 'pretendard/dist/web/variable/pretendardvariable-dynamic-subset.css';
+import '@fontsource/jua/400.css';
+import '../styles/global.css';
+import { SITE } from '../config/site.mjs';
+import { withBase } from '../lib/paths.mjs';
+import { intro } from '../lib/intro-assets.mjs';
+import LaunchDialog from '../components/LaunchDialog.astro';
+
+interface Props {
+  title?: string;
+  description?: string;
+  noindex?: boolean;
+  bodyClass?: string;
+}
+const { title, description = SITE.description, noindex = false, bodyClass = '' } = Astro.props;
+const fullTitle = title ? `${title} · ${SITE.name}` : `${SITE.name} — ${SITE.slogan}`;
+const canonical = new URL(Astro.url.pathname, Astro.site).href;
+const ogImage = new URL(withBase('/og.png'), Astro.site).href;
+---
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{fullTitle}</title>
+    <meta name="description" content={description} />
+    {noindex ? <meta name="robots" content="noindex" /> : <link rel="canonical" href={canonical} />}
+    <meta name="theme-color" content="#FAF9F6" />
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content={SITE.name} />
+    <meta property="og:title" content={fullTitle} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:image" content={ogImage} />
+    <meta name="twitter:card" content="summary_large_image" />
+    <link rel="icon" type="image/png" href={withBase('/favicon.png')} />
+  </head>
+  <body class={bodyClass}>
+    <a class="skip-link" href="#main">본문으로 건너뛰기</a>
+    <header class="site-header">
+      <div class="wrap">
+        <a class="brand" href={withBase('/')} aria-label={`${SITE.name} 홈`}>
+          <img src={intro.logo.src} alt="" width={intro.logo.width} height={intro.logo.height} />
+          <span class="visually-hidden">{SITE.name}</span>
+        </a>
+        <nav class="header-nav" aria-label="주요 메뉴">
+          <a href={withBase('/#archive')}>아카이브</a>
+          <a href={withBase('/#about')}>소개</a>
+        </nav>
+      </div>
+    </header>
+    <main id="main" tabindex="-1">
+      <slot />
+    </main>
+    <footer class="site-footer">
+      <div class="wrap">
+        <span>© {new Date().getFullYear()} {SITE.name}</span>
+        <span>{SITE.slogan}</span>
+      </div>
+    </footer>
+    <LaunchDialog />
+  </body>
+</html>

@@ -1,0 +1,39 @@
+---
+// 16:10 작품 썸네일 — 전체 클릭. 카테고리 라벨은 HTML 오버레이(이미지에 넣지 않음).
+// JS가 없으면 그냥 링크로 동작하고, JS가 있으면 기기별 실행 분기(launch-dialog)를 적용한다.
+import { CATEGORY_LABEL, CREATOR_LABEL } from '../lib/day-schema.mjs';
+import { withBase, dayPath } from '../lib/paths.mjs';
+
+interface Props {
+  project: any;
+  day: number;
+  eager?: boolean;
+}
+const { project: p, day, eager = false } = Astro.props;
+const label = CATEGORY_LABEL[p.category as keyof typeof CATEGORY_LABEL];
+const who = CREATOR_LABEL[p.who as keyof typeof CREATOR_LABEL];
+const data = JSON.stringify({
+  title: p.title,
+  who: p.who,
+  url: p.launchUrl,
+  devices: p.supportedDevices,
+  rec: p.recommendedDevice,
+  os: p.supportedOS,
+  dayHref: dayPath(day),
+});
+const alt = `${who}의 작품 「${p.title}」 썸네일`;
+---
+{p.launchUrl ? (
+  <a class="thumb" href={p.launchUrl} target="_blank" rel="noopener noreferrer" data-launch={data}
+     aria-label={`${p.title} 체험하기 (${who} · ${label}, 새 창)`}>
+    <img src={withBase(p.thumbnail)} alt={alt} width="1600" height="1000" loading={eager ? 'eager' : 'lazy'} decoding="async" />
+    <span class="thumb-cat" aria-hidden="true">{label}</span>
+    <span class="thumb-cta" aria-hidden="true">체험하기 ↗</span>
+  </a>
+) : (
+  <button type="button" class="thumb is-unavailable" data-launch={data} aria-label={`${p.title} — 현재 체험할 수 없는 작품 (${who} · ${label})`}>
+    <img src={withBase(p.thumbnail)} alt={alt} width="1600" height="1000" loading={eager ? 'eager' : 'lazy'} decoding="async" />
+    <span class="thumb-cat" aria-hidden="true">{label}</span>
+    <span class="thumb-cta" aria-hidden="true">체험 준비 중</span>
+  </button>
+)}

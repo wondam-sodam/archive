@@ -1,0 +1,167 @@
+---
+// 작업실 인트로 (CSS 2.5D 레이어 + Web 타이밍). Three.js 대신 CSS 레이어를 쓴 이유는 IMPLEMENTATION_NOTES.md 참고.
+// 상태: idle → opening → active → monitorOn → (스크롤) zoom → archive
+// - JS가 없거나 실패하면 CSS 기본값 = 완성 컷(노트북 열림 + 모니터 점등 + 로고) 정지 화면.
+// - prefers-reduced-motion 이면 완성 컷 정지 + 스크롤 줌 없음.
+// - 로고는 public/assets/intro/logo_temp.png 하나만 교체하면 바뀐다 (빌드 시 web/logo.webp 로 자동 변환).
+import { intro } from '../../lib/intro-assets.mjs';
+import { SITE } from '../../config/site.mjs';
+
+const s = intro.monitor.screen;
+const chars = [
+  { who: 'sodam', name: '소담', states: intro.sodam },
+  { who: 'seowon', name: '서원', states: intro.seowon },
+] as const;
+const stateKeys = ['idle_closed', 'opening', 'active'] as const;
+---
+<section class="intro" id="intro" data-intro aria-labelledby="intro-title">
+  <div class="intro-sticky">
+    <div class="intro-viewport">
+      <div class="zoomer" data-stage aria-hidden="true"><div class="stage">
+        <img class="layer bg" src={intro.bg.src} srcset={`${intro.bgSmall.src} 960w, ${intro.bg.src} 1672w`} sizes="(max-width: 700px) 960px, 100vw" alt="" width={intro.bg.width} height={intro.bg.height} fetchpriority="high" />
+        <div class="layer monitor">
+          <img src={intro.monitor.src} alt="" width={intro.monitor.width} height={intro.monitor.height} />
+          <div class="screen" style={`left:${s.left}%;top:${s.top}%;width:${s.width}%;height:${s.height}%`}>
+            <div class="screen-glow"></div>
+            <img class="screen-logo" src={intro.logo.src} alt="" width={intro.logo.width} height={intro.logo.height} />
+          </div>
+        </div>
+        <img class="layer desk" src={intro.desk.src} alt="" width={intro.desk.width} height={intro.desk.height} />
+        {chars.map((c) => (
+          <div class={`layer char char-${c.who}`}>
+            <div class="char-bob">
+              {stateKeys.map((k) => (
+                <img class={`pose pose-${k}`} src={c.states[k].src} alt="" width={c.states[k].width} height={c.states[k].height} decoding="async" />
+              ))}
+              <span class="laptop-glow"></span>
+            </div>
+          </div>
+        ))}
+      </div></div>
+      <div class="screen-fill" data-screen-fill aria-hidden="true"></div>
+    </div>
+
+    <div class="intro-caption">
+      <div class="wrap caption-inner">
+        <div>
+          <h1 id="intro-title" class="visually-hidden">{SITE.name} 아카이브</h1>
+          <p class="slogan">{SITE.slogan}</p>
+          <p class="caption-sub">소담과 서원이 같은 미션으로 각자 만든 작은 프로그램을 모아 둔 곳</p>
+        </div>
+        <div class="caption-actions">
+          <label class="fake-search" for="day-search">회차 검색 <span>Day 번호 · 미션 · 작품명</span></label>
+          <a class="btn btn-solid" href="#archive" data-skip>아카이브 바로 보기</a>
+          <span class="scroll-hint" aria-hidden="true">스크롤하면 모니터 안으로 ↓</span>
+        </div>
+      </div>
+    </div>
+  </div>
+  <p class="visually-hidden">소담(왼쪽)과 서원(오른쪽)이 긴 책상에 나란히 앉아 각자의 노트북을 열고, 벽에 걸린 모니터에 원담소담 로고가 켜지는 장면입니다.</p>
+</section>
+
+<style>
+  .intro {
+    --vh: calc(100svh - var(--header-h));
+    --zoom-run: 90svh; /* 스크롤 줌에 쓰는 거리 (강제 잠금 없음) */
+    position: relative;
+    height: calc(var(--vh) + var(--zoom-run));
+    background: var(--cream);
+  }
+  .intro-sticky { position: sticky; top: var(--header-h); height: var(--vh); display: flex; flex-direction: column; overflow: hidden; }
+  .intro-viewport { position: relative; flex: 1 1 auto; min-height: 0; overflow: hidden; background: #f6e9e6; border-bottom: 1px solid var(--rule); }
+
+  /* zoomer = 스크롤 줌 변환(뷰포트 좌표, 원점 0 0) / stage = 배경 원본(1672×941) 좌표계, 화면을 덮도록(cover) 가운데 정렬 */
+  .intro-viewport { container-type: size; }
+  .zoomer { position: absolute; inset: 0; transform-origin: 0 0; transform: translate(var(--tx, 0px), var(--ty, 0px)) scale(var(--zoom, 1)); }
+  .stage {
+    position: absolute; left: 50%; top: 46%;
+    width: 100%; width: max(100cqw, calc(100cqh * 1.7768));
+    aspect-ratio: 1672 / 941;
+    transform: translate(-50%, -46%);
+  }
+  .layer { position: absolute; }
+  .bg { inset: 0; width: 100%; height: 100%; }
+  .desk { left: 0; top: 31.9%; width: 100%; height: auto; }
+  .monitor { left: 39.23%; top: 20.6%; width: 21.53%; }
+  .monitor > img { width: 100%; height: auto; }
+  .screen { position: absolute; overflow: hidden; border-radius: 0.6% / 1%; display: grid; place-items: center; }
+  .screen-glow { position: absolute; inset: 0; background: radial-gradient(120% 120% at 50% 45%, #fdfbff 0%, #f1ecf8 55%, #e4dcf1 100%); box-shadow: inset 0 0 18px rgb(126 111 168 / 0.25); }
+  .screen-logo { position: relative; width: 72%; height: auto; }
+
+  .char { bottom: 16%; }
+  .char-sodam { left: 27.1%; width: 16.97%; }
+  .char-seowon { left: 57.05%; width: 14.6%; }
+  .char-bob { position: relative; }
+  .pose { width: 100%; height: auto; }
+  .pose + .pose { position: absolute; left: 0; top: 0; }
+  .pose { opacity: 0; transition: opacity 0.16s linear; }
+  /* 기본(=JS 없음/모션 감소) = 완성 컷 */
+  .pose-active { opacity: 1; }
+  .laptop-glow { position: absolute; pointer-events: none; border-radius: 50%; mix-blend-mode: soft-light; opacity: 0.7; transition: opacity 0.6s ease; }
+  .char-sodam .laptop-glow { left: 2%; top: 64%; width: 62%; height: 34%; background: radial-gradient(closest-side, rgb(160 140 220 / 0.9), transparent); }
+  .char-seowon .laptop-glow { left: 18%; top: 66%; width: 66%; height: 34%; background: radial-gradient(closest-side, rgb(170 190 140 / 0.9), transparent); }
+
+  .screen-fill { position: absolute; inset: 0; background: var(--cream); opacity: var(--fill, 0); pointer-events: none; }
+
+  /* ---- 타임라인 상태 (JS가 data-state 설정) ---- */
+  [data-state='idle'] .pose-active, [data-state='opening'] .pose-active { opacity: 0; }
+  [data-state='idle'] .pose-idle_closed { opacity: 1; }
+  [data-state='opening'] .pose-opening { opacity: 1; }
+  [data-state='idle'] .laptop-glow, [data-state='opening'] .laptop-glow { opacity: 0; }
+  /* 서원은 소담보다 살짝 늦게 */
+  [data-state='opening'][data-lag] .char-seowon .pose-opening { opacity: 0; }
+  [data-state='opening'][data-lag] .char-seowon .pose-idle_closed { opacity: 1; }
+
+  .screen-glow, .screen-logo { transition: opacity 0.5s ease, transform 0.6s cubic-bezier(.2,.8,.2,1), filter 0.5s; }
+  [data-state='idle'] .screen-glow, [data-state='opening'] .screen-glow, [data-state='active'] .screen-glow { opacity: 0; transform: scaleY(0.02); }
+  [data-state='idle'] .screen-logo, [data-state='opening'] .screen-logo, [data-state='active'] .screen-logo,
+  [data-state='monitorOn'][data-logo='off'] .screen-logo { opacity: 0; transform: scale(0.92); filter: blur(2px); }
+
+  /* 은은한 숨쉬기 (모션 감소 시 없음) */
+  [data-anim] .char-bob { animation: bob 3.8s ease-in-out infinite; }
+  [data-anim] .char-seowon .char-bob { animation-delay: -1.6s; }
+  @keyframes bob { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-0.7%); } }
+
+  /* ---- 캡션 ---- */
+  .intro-caption { flex: none; background: var(--cream); opacity: var(--caption-fade, 1); }
+  .caption-inner { display: flex; align-items: center; justify-content: space-between; gap: 12px 24px; padding-top: 14px; padding-bottom: 14px; flex-wrap: wrap; }
+  .slogan { font-family: var(--font-display); font-size: clamp(20px, 2.4vw, 28px); line-height: 1.25; }
+  .caption-sub { font-size: 14px; color: var(--muted); margin-top: 2px; }
+  .caption-actions { display: flex; align-items: center; gap: 16px; }
+  .scroll-hint { font-size: 13px; color: var(--muted); transition: opacity 0.4s; }
+  [data-state='idle'] .scroll-hint, [data-state='opening'] .scroll-hint, [data-state='active'] .scroll-hint { opacity: 0; }
+
+  /* 모바일: 인물 얼굴·노트북이 보이도록 양옆을 크롭하고, 장면 높이는 화면 폭 기준 */
+  .fake-search { display: inline-flex; align-items: center; gap: 10px; min-height: 44px; padding: 0 14px; border: 1px solid var(--charcoal); background: #fff; font-weight: 700; font-size: 14px; cursor: text; }
+  .fake-search span { font-weight: 400; color: var(--muted); }
+  @media (max-width: 1000px) and (min-width: 701px) { .fake-search span { display: none; } }
+  @media (max-width: 700px) {
+    .intro { --zoom-run: 55svh; height: auto; }
+    .intro-sticky { height: auto; }
+    .intro::after { content: ''; display: block; height: var(--zoom-run); }
+    .fake-search { flex: 1 1 100%; height: 52px; }
+    .caption-actions { flex-wrap: wrap; }
+    .caption-actions .btn { flex: 1 1 100%; }
+    .intro-viewport { flex: none; height: min(calc(var(--vh) - 150px), 118vw); }
+    .caption-inner { padding-top: 16px; padding-bottom: 18px; }
+    .caption-actions { width: 100%; justify-content: space-between; }
+    .scroll-hint { display: none; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .intro { height: auto; }
+    .intro-sticky { position: relative; top: 0; height: auto; min-height: min(var(--vh), 760px); }
+    .intro-viewport { flex: none; height: min(calc(var(--vh) - 120px), 62vw); min-height: 260px; }
+    .pose, .screen-glow, .screen-logo, .laptop-glow { transition: none !important; }
+    .scroll-hint { display: none; }
+  }
+  [data-intro][data-static] { height: auto; }
+  [data-intro][data-static] .intro-sticky { position: relative; top: 0; height: auto; }
+  [data-intro][data-static] .intro-viewport { flex: none; height: min(calc(var(--vh) - 120px), 62vw); min-height: 260px; }
+  @media (max-width: 700px) { [data-intro][data-static] .intro-viewport { height: min(calc(var(--vh) - 150px), 118vw); } }
+</style>
+
+<script>
+  import { startIntro } from './intro-controller';
+  startIntro();
+</script>

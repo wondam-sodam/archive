@@ -1,0 +1,227 @@
+---
+// 홈 전체 Day 탐색: PC = 왼쪽 Day 목록 / 오른쪽 선택 Day 두 작품, 모바일 = 검색 + 세로 목록(선택 시 펼침)
+import Thumb from './Thumb.astro';
+import { allPublicDays, hasSample } from '../lib/content.mjs';
+import { formatDate } from '../lib/days.mjs';
+import { toIndexEntry } from '../lib/search.mjs';
+import { dayPath } from '../lib/paths.mjs';
+import { CREATOR_LABEL } from '../lib/day-schema.mjs';
+
+const days = allPublicDays;
+const index = days.map(toIndexEntry);
+---
+<section id="archive" class="archive" aria-labelledby="archive-title">
+  <div class="wrap">
+    <div class="archive-head">
+      <div>
+        <p class="eyebrow">Archive</p>
+        <h2 id="archive-title" class="archive-title">회차 아카이브</h2>
+      </div>
+      <form class="search" role="search" action="#archive" onsubmit="return false">
+        <label for="day-search" class="search-label">회차 검색</label>
+        <div class="search-box">
+          <input id="day-search" type="search" name="q" autocomplete="off" enterkeyhint="search"
+                 placeholder="Day 번호, 미션, 작품명, 날짜" aria-describedby="result-count" />
+        </div>
+      </form>
+    </div>
+
+    {hasSample && (
+      <p class="sample-banner">지금 보이는 회차는 화면 확인용 <strong>샘플</strong>이에요. 실제 회차가 등록되면 교체됩니다.</p>
+    )}
+
+    {days.length === 0 ? (
+      <p class="empty-state">아직 공개된 회차가 없어요. 첫 기록을 준비하고 있어요.</p>
+    ) : (
+      <div class="archive-grid" data-archive>
+        <div class="day-list-col">
+          <p class="result-count" id="result-count" aria-live="polite">전체 {days.length}개 회차 · 최신순</p>
+          <ol class="day-list" id="day-list">
+            {days.map((d, i) => (
+              <li class="day-li" data-day={d.day}>
+                <a class="day-item" href={dayPath(d.day)} data-day={d.day} aria-current={i === 0 ? 'true' : undefined}>
+                  <span class="day-item-num day-num">DAY {d.day}</span>
+                  <span class="day-item-date">{formatDate(d.date)}</span>
+                  <span class="day-item-title">{d.mission.title}</span>
+                </a>
+              </li>
+            ))}
+          </ol>
+          <p class="no-result" id="no-result" hidden>검색 결과가 없어요. 다른 단어로 찾아보세요.</p>
+        </div>
+
+        <div class="day-panels" id="day-panels">
+          {days.map((d, i) => (
+            <article class="day-panel" id={`panel-${d.day}`} data-day={d.day} hidden={i !== 0} aria-labelledby={`panel-title-${d.day}`}>
+              <header class="panel-head">
+                <p class="panel-meta"><span class="day-num">DAY {d.day}</span><span aria-hidden="true">·</span><time datetime={d.date}>{formatDate(d.date)}</time></p>
+                <h3 class="panel-title" id={`panel-title-${d.day}`}>{d.mission.title}</h3>
+                <p class="panel-mission">{d.mission.text}</p>
+              </header>
+              <div class="panel-works">
+                {d.slots.map((p: any) => (
+                  <div class={`panel-work who-${p.who}`}>
+                    <p class="who-tag">{CREATOR_LABEL[p.who as 'sodam' | 'seowon']}</p>
+                    {p.hidden ? (
+                      <div class="thumb-hidden">공개 중단된 작품이에요</div>
+                    ) : (
+                      <>
+                        <Thumb project={p} day={d.day} eager={i === 0} />
+                        <p class="panel-summary">{p.summary}</p>
+                      </>
+                    )}
+                  </div>
+                ))}
+              </div>
+              <p class="panel-foot"><a class="text-link" href={dayPath(d.day)}>그날의 기록 보기 →</a></p>
+            </article>
+          ))}
+        </div>
+      </div>
+    )}
+  </div>
+  <script type="application/json" id="search-index" set:html={JSON.stringify(index)} />
+</section>
+
+<style>
+  .archive { padding: clamp(40px, 7vw, 88px) 0 clamp(48px, 8vw, 96px); scroll-margin-top: var(--header-h); }
+  .archive-head { display: flex; flex-wrap: wrap; align-items: end; justify-content: space-between; gap: 20px 40px; padding-bottom: 20px; border-bottom: 1px solid var(--rule); }
+  .archive-title { font-family: var(--font-display); font-weight: 400; font-size: clamp(28px, 4vw, 44px); line-height: 1.1; margin-top: 6px; }
+  .search { flex: 1 1 340px; max-width: 520px; }
+  .search-label { display: block; font-size: 13px; font-weight: 700; margin-bottom: 6px; }
+  .search-box { position: relative; }
+  .search-box::before { content: ''; position: absolute; left: 14px; top: 50%; width: 12px; height: 12px; border: 2px solid var(--charcoal); border-radius: 50%; transform: translateY(-60%); }
+  .search-box::after { content: ''; position: absolute; left: 25px; top: 58%; width: 6px; height: 2px; background: var(--charcoal); transform: rotate(45deg); }
+  .search input { width: 100%; height: 52px; padding: 0 14px 0 42px; border: 1px solid var(--charcoal); border-radius: 0; background: #fff; font-size: 16px; }
+  .search input:focus { outline: 2px solid var(--lilac); outline-offset: 0; }
+  .sample-banner { margin-top: 16px; }
+  .empty-state { padding: 48px 0; color: var(--muted); }
+
+  .archive-grid { display: grid; grid-template-columns: minmax(260px, 32%) 1fr; gap: 0; margin-top: 0; }
+  .day-list-col { border-right: 1px solid var(--rule); padding: 16px 24px 16px 0; }
+  .result-count { font-size: 13px; color: var(--muted); padding-bottom: 10px; }
+  .day-list { list-style: none; margin: 0; padding: 0; max-height: min(72vh, 760px); overflow: auto; border-top: 1px solid var(--rule-soft); overscroll-behavior: contain; }
+  .day-item { display: grid; grid-template-columns: auto 1fr; gap: 2px 14px; padding: 14px 12px 14px 14px; text-decoration: none; border-bottom: 1px solid var(--rule-soft); border-left: 4px solid transparent; }
+  .day-item:hover { background: #fff; }
+  .day-item[aria-current='true'] { background: #fff; border-left-color: var(--lilac); }
+  .day-item-num { font-size: 22px; line-height: 1.2; grid-row: span 2; align-self: center; min-width: 4.4em; }
+  .day-item-date { font-size: 12px; color: var(--muted); font-variant-numeric: tabular-nums; }
+  .day-item-title { font-weight: 700; font-size: 15px; line-height: 1.35; }
+  .no-result { padding: 24px 4px; color: var(--muted); }
+
+  .day-panels { padding: 20px 0 0 clamp(20px, 3vw, 40px); min-width: 0; }
+  .panel-head { display: grid; gap: 6px; padding-bottom: 18px; }
+  .panel-meta { display: flex; gap: 8px; align-items: baseline; font-size: 14px; color: var(--muted); }
+  .panel-meta .day-num { font-size: 18px; color: var(--charcoal); }
+  .panel-title { font-size: clamp(22px, 2.6vw, 30px); font-weight: 800; line-height: 1.3; letter-spacing: -0.01em; }
+  .panel-mission { color: var(--charcoal); max-width: 60ch; white-space: pre-line; }
+  .panel-works { display: grid; grid-template-columns: 1fr 1fr; gap: clamp(16px, 2.4vw, 32px); }
+  .panel-work { display: grid; gap: 10px; align-content: start; min-width: 0; }
+  .panel-summary { font-size: 15px; color: var(--charcoal); }
+  .panel-foot { margin-top: 22px; padding-top: 14px; border-top: 1px solid var(--rule-soft); }
+
+  @media (max-width: 900px) {
+    .archive-grid { display: block; }
+    .day-list-col { border-right: 0; padding: 14px 0 0; }
+    .day-list { max-height: none; overflow: visible; }
+    .day-panels { padding: 0; }
+    /* 모바일: 선택된 패널은 JS가 해당 목록 항목 아래로 옮긴다 */
+    .day-li > .day-panel { padding: 16px 0 24px; border-bottom: 1px solid var(--rule); }
+    .day-li > .day-panel .panel-meta,
+    .day-li > .day-panel .panel-title { display: none; }
+    .day-li > .day-panel .panel-head { padding-bottom: 14px; }
+    .panel-works { grid-template-columns: 1fr; }
+    .day-item::after { content: '+'; position: absolute; right: 14px; top: 50%; transform: translateY(-50%); font-size: 20px; color: var(--muted); }
+    .day-item { position: relative; padding-right: 40px; }
+    .day-item[aria-current='true']::after { content: '−'; }
+  }
+</style>
+
+<script>
+  import { searchDays } from '../lib/search.mjs';
+
+  const root = document.querySelector<HTMLElement>('[data-archive]');
+  if (root) {
+    const index = JSON.parse(document.getElementById('search-index')!.textContent || '[]');
+    const list = document.getElementById('day-list')!;
+    const panelsHome = document.getElementById('day-panels')!;
+    const input = document.getElementById('day-search') as HTMLInputElement;
+    const count = document.getElementById('result-count')!;
+    const noResult = document.getElementById('no-result')!;
+    const mq = window.matchMedia('(max-width: 900px)');
+    const items = [...list.querySelectorAll<HTMLAnchorElement>('.day-item')];
+    const allDays = items.map((a) => Number(a.dataset.day));
+    let selected = allDays[0];
+    let mobileOpen = true; // 모바일에서도 처음에는 최신(또는 ?day=) 회차를 펼쳐 둔다
+
+    const panel = (n: number) => document.getElementById(`panel-${n}`)!;
+    const li = (n: number) => list.querySelector<HTMLElement>(`.day-li[data-day="${n}"]`)!;
+
+    function place() {
+      const p = panel(selected);
+      if (mq.matches) {
+        if (mobileOpen) li(selected).append(p); else panelsHome.append(p);
+        p.hidden = !mobileOpen;
+      } else {
+        panelsHome.append(p);
+        p.hidden = false;
+      }
+    }
+
+    function select(n: number, opts: { updateUrl?: boolean; toggle?: boolean } = {}) {
+      if (!allDays.includes(n)) return;
+      if (opts.toggle && mq.matches && n === selected) mobileOpen = !mobileOpen; else mobileOpen = true;
+      const prev = panel(selected);
+      prev.hidden = true;
+      panelsHome.append(prev);
+      selected = n;
+      for (const a of items) {
+        if (Number(a.dataset.day) === n && (mobileOpen || !mq.matches)) a.setAttribute('aria-current', 'true');
+        else a.removeAttribute('aria-current');
+      }
+      place();
+      if (opts.updateUrl) {
+        const url = new URL(location.href);
+        url.searchParams.set('day', String(n));
+        url.hash = 'archive';
+        history.replaceState(history.state, '', url);
+      }
+    }
+
+    list.addEventListener('click', (e) => {
+      const a = (e.target as HTMLElement).closest<HTMLAnchorElement>('.day-item');
+      if (!a || e.metaKey || e.ctrlKey || e.shiftKey || e.button !== 0) return;
+      e.preventDefault();
+      select(Number(a.dataset.day), { updateUrl: true, toggle: true });
+      if (mq.matches) a.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+    });
+
+    let timer = 0;
+    function runSearch() {
+      const q = input.value;
+      const hits = searchDays(index, q);
+      const set = new Set(hits);
+      for (const n of allDays) li(n).hidden = !set.has(n);
+      // 정확한 Day 번호 일치를 맨 위로
+      for (const n of hits) list.append(li(n));
+      noResult.hidden = hits.length > 0;
+      count.textContent = q.trim() ? `검색 결과 ${hits.length}개` : `전체 ${allDays.length}개 회차 · 최신순`;
+      if (hits.length && !set.has(selected)) select(hits[0]);
+      if (!hits.length && !mq.matches) panel(selected).hidden = true;
+      else if (hits.length) place();
+      const url = new URL(location.href);
+      if (q.trim()) url.searchParams.set('q', q.trim()); else url.searchParams.delete('q');
+      history.replaceState(history.state, '', url);
+    }
+    input.addEventListener('input', () => { clearTimeout(timer); timer = window.setTimeout(runSearch, 80); });
+
+    mq.addEventListener('change', () => { mobileOpen = true; select(selected); });
+
+    // URL 문맥 복원 (?day=N, ?q=...)
+    const params = new URLSearchParams(location.search);
+    const q = params.get('q');
+    if (q) { input.value = q; runSearch(); }
+    const want = Number(params.get('day'));
+    if (want && allDays.includes(want)) select(want); else place();
+  }
+</script>

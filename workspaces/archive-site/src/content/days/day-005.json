@@ -1,0 +1,61 @@
+{
+  "schemaVersion": 1,
+  "day": 5,
+  "date": "2026-11-19",
+  "sample": true,
+  "mission": {
+    "title": "둘만의 플레이리스트",
+    "text": "음악과 관련된 작은 프로그램을 만들어 보세요."
+  },
+  "visibility": "published",
+  "reelUrl": "https://example.org/wondamsodam-sample/reel/day-5",
+  "projects": {
+    "sodam": {
+      "visibility": "published",
+      "description": "기분 버튼을 고르면 어울리는 분위기의 곡 목록 예시를 보여 줍니다.",
+      "features": [
+        "기분 선택",
+        "분위기별 추천 목록"
+      ],
+      "steps": [
+        "기분을 고릅니다.",
+        "추천 목록을 확인합니다."
+      ],
+      "notice": null,
+      "supportedOS": [],
+      "githubUrl": null,
+      "releaseUrl": null,
+      "tags": [],
+      "thumbnail": "/thumbnails/day-005-sodam.webp",
+      "title": "기분 따라 플레이리스트",
+      "summary": "오늘 기분을 고르면 어울리는 곡 분위기를 추천",
+      "category": "web",
+      "supportedDevices": [
+        "desktop",
+        "mobile"
+      ],
+      "recommendedDevice": "mobile",
+      "launchUrl": "https://example.org/wondamsodam-sample/day-5/sodam"
+    },
+    "seowon": {
+      "visibility": "hidden",
+      "description": "",
+      "features": [],
+      "steps": [],
+      "notice": null,
+      "supportedOS": [],
+      "githubUrl": null,
+      "releaseUrl": null,
+      "tags": [],
+      "thumbnail": "/thumbnails/day-005-seowon.webp",
+      "title": "숨김 처리된 작품",
+      "summary": "개별 작품 비공개 샘플",
+      "category": "web",
+      "supportedDevices": [
+        "desktop"
+      ],
+      "recommendedDevice": null,
+      "launchUrl": "https://example.org/wondamsodam-sample/day-5/seowon"
+    }
+  }
+}

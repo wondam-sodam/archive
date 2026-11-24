@@ -1,0 +1,63 @@
+{
+  "schemaVersion": 1,
+  "day": 3,
+  "date": "2026-11-14",
+  "sample": true,
+  "mission": {
+    "title": "집중 타이머",
+    "text": "딴짓을 줄여 주는 나만의 타이머를 만들어 보세요."
+  },
+  "visibility": "published",
+  "reelUrl": "https://example.org/wondamsodam-sample/reel/day-3",
+  "projects": {
+    "sodam": {
+      "visibility": "published",
+      "description": "뽀모도로 방식으로 집중 시간과 휴식 시간을 번갈아 알려 줍니다.",
+      "features": [
+        "집중/휴식 자동 전환",
+        "완료한 토마토 개수 표시"
+      ],
+      "steps": [
+        "시작을 누릅니다.",
+        "알림이 오면 쉬어 갑니다."
+      ],
+      "notice": null,
+      "supportedOS": [],
+      "githubUrl": null,
+      "releaseUrl": null,
+      "tags": [],
+      "thumbnail": "/thumbnails/day-003-sodam.webp",
+      "title": "토마토 한 알",
+      "summary": "25분 집중, 5분 휴식을 알려 주는 귀여운 타이머",
+      "category": "web",
+      "supportedDevices": [
+        "desktop",
+        "mobile"
+      ],
+      "recommendedDevice": null,
+      "launchUrl": "https://example.org/wondamsodam-sample/day-3/sodam"
+    },
+    "seowon": {
+      "visibility": "published",
+      "description": "샘플: 현재는 체험 링크가 내려간 상태를 보여 주기 위한 데이터입니다.",
+      "features": [
+        "집중 시간 측정"
+      ],
+      "steps": [],
+      "notice": null,
+      "supportedOS": [],
+      "githubUrl": null,
+      "releaseUrl": null,
+      "tags": [],
+      "thumbnail": "/thumbnails/day-003-seowon.webp",
+      "title": "딴짓 감시자",
+      "summary": "집중이 끊기면 살짝 알려 주는 타이머",
+      "category": "web",
+      "supportedDevices": [
+        "desktop"
+      ],
+      "recommendedDevice": null,
+      "launchUrl": null
+    }
+  }
+}

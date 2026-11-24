@@ -1,0 +1,70 @@
+{
+  "schemaVersion": 1,
+  "day": 6,
+  "date": "2026-11-21",
+  "sample": true,
+  "mission": {
+    "title": "밤하늘 관찰",
+    "text": "밤하늘을 주제로 무엇이든 만들어 보세요."
+  },
+  "visibility": "published",
+  "reelUrl": null,
+  "projects": {
+    "sodam": {
+      "visibility": "published",
+      "description": "화면의 별을 차례로 눌러 선으로 잇고, 별자리에 이름을 붙일 수 있어요.",
+      "features": [
+        "별 연결",
+        "별자리 이름 붙이기",
+        "이미지로 저장"
+      ],
+      "steps": [
+        "별을 순서대로 누릅니다.",
+        "이름을 입력합니다.",
+        "저장합니다."
+      ],
+      "notice": null,
+      "supportedOS": [],
+      "githubUrl": "https://example.org/wondamsodam-sample/github/day-6-sodam",
+      "releaseUrl": null,
+      "tags": [],
+      "thumbnail": "/thumbnails/day-006-sodam.webp",
+      "title": "별 잇기 놀이",
+      "summary": "별을 이어 나만의 별자리를 만드는 웹 놀이",
+      "category": "web",
+      "supportedDevices": [
+        "desktop",
+        "mobile"
+      ],
+      "recommendedDevice": null,
+      "launchUrl": "https://example.org/wondamsodam-sample/day-6/sodam"
+    },
+    "seowon": {
+      "visibility": "published",
+      "description": "달력의 날짜를 누르면 그날 달의 모양을 그림으로 보여 줍니다.",
+      "features": [
+        "월간 달력",
+        "달 위상 표시"
+      ],
+      "steps": [
+        "월을 고릅니다.",
+        "날짜를 누릅니다."
+      ],
+      "notice": null,
+      "supportedOS": [],
+      "githubUrl": "https://example.org/wondamsodam-sample/github/day-6-seowon",
+      "releaseUrl": null,
+      "tags": [],
+      "thumbnail": "/thumbnails/day-006-seowon.webp",
+      "title": "달 모양 달력",
+      "summary": "날짜별 달의 모양을 보여 주는 달력",
+      "category": "web",
+      "supportedDevices": [
+        "desktop",
+        "mobile"
+      ],
+      "recommendedDevice": "desktop",
+      "launchUrl": "https://example.org/wondamsodam-sample/day-6/seowon"
+    }
+  }
+}

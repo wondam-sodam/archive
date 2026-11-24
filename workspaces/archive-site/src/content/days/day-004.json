@@ -1,0 +1,54 @@
+{
+  "schemaVersion": 1,
+  "day": 4,
+  "date": "2026-11-16",
+  "sample": true,
+  "mission": {
+    "title": "비공개 샘플 회차",
+    "text": "비공개(hidden) 회차가 사이트에서 제외되는지 확인하기 위한 샘플입니다."
+  },
+  "visibility": "hidden",
+  "reelUrl": null,
+  "projects": {
+    "sodam": {
+      "visibility": "published",
+      "description": "",
+      "features": [],
+      "steps": [],
+      "notice": null,
+      "supportedOS": [],
+      "githubUrl": null,
+      "releaseUrl": null,
+      "tags": [],
+      "thumbnail": "/thumbnails/day-004-sodam.webp",
+      "title": "숨김 샘플 A",
+      "summary": "표시되면 안 되는 샘플",
+      "category": "web",
+      "supportedDevices": [
+        "desktop"
+      ],
+      "recommendedDevice": null,
+      "launchUrl": "https://example.org/wondamsodam-sample/day-4/sodam"
+    },
+    "seowon": {
+      "visibility": "published",
+      "description": "",
+      "features": [],
+      "steps": [],
+      "notice": null,
+      "supportedOS": [],
+      "githubUrl": null,
+      "releaseUrl": null,
+      "tags": [],
+      "thumbnail": "/thumbnails/day-004-seowon.webp",
+      "title": "숨김 샘플 B",
+      "summary": "표시되면 안 되는 샘플",
+      "category": "web",
+      "supportedDevices": [
+        "desktop"
+      ],
+      "recommendedDevice": null,
+      "launchUrl": "https://example.org/wondamsodam-sample/day-4/seowon"
+    }
+  }
+}

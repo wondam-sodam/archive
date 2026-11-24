@@ -1,0 +1,25 @@
+{
+  "name": "wondamsodam-archive-site",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "원담소담 공개 아카이브 (Astro 정적 사이트, GitHub Pages)",
+  "scripts": {
+    "dev": "node scripts/optimize-intro.mjs && astro dev",
+    "prebuild": "node scripts/optimize-intro.mjs && node scripts/validate-content.mjs",
+    "build": "astro build",
+    "preview": "astro preview",
+    "validate:content": "node scripts/validate-content.mjs"
+  },
+  "engines": {
+    "node": ">=22.12.0"
+  },
+  "dependencies": {
+    "@fontsource/jua": "^5.3.0",
+    "astro": "^7.4.13",
+    "pretendard": "^1.3.9",
+    "qrcode-generator": "^2.0.4",
+    "sharp": "^0.35.5",
+    "zod": "^4.6.7"
+  }
+}

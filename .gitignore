@@ -1,0 +1,32 @@
+# 공개 저장소(wondam-sodam/archive)에는 아카이브 웹사이트 실행에 필요한 파일만 올린다.
+# 기본은 전부 제외하고, 필요한 경로만 아래에서 다시 포함한다.
+/*
+!/.gitignore
+!/README.md
+!/.github/
+!/workspaces/
+/workspaces/*
+!/workspaces/archive-site/
+!/docs/
+/docs/*
+!/docs/screenshots/
+
+# 사이트 내부에서도 빌드 산출물/로컬 도구 파일은 제외
+node_modules/
+dist/
+.astro/
+.npm-cache/
+.tmp/
+test-results/
+playwright-report/
+*.log
+.env
+.env.*
+.DS_Store
+Thumbs.db
+
+# 사이트 실행에 필요 없는 자산/로컬 전용 파일
+/workspaces/archive-site/public/assets/intro/monitor_on_temp_logo_REFERENCE_ONLY.png
+/workspaces/archive-site/public/assets/intro/web/
+/workspaces/archive-site/.local/
+/workspaces/archive-site/src/generated/

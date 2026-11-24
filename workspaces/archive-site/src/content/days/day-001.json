@@ -1,0 +1,70 @@
+{
+  "schemaVersion": 1,
+  "day": 1,
+  "date": "2026-11-10",
+  "sample": true,
+  "mission": {
+    "title": "우리만의 랜덤 뽑기",
+    "text": "평범한 선택 하나를 재밌게 대신 골라주는 프로그램을 만들어 보세요."
+  },
+  "visibility": "published",
+  "reelUrl": "https://example.org/wondamsodam-sample/reel/day-1",
+  "projects": {
+    "sodam": {
+      "visibility": "published",
+      "description": "여러 메뉴를 입력하면 무작위로 하나를 골라 줍니다. 결정을 못 하는 저녁 시간을 위해 만들었어요.",
+      "features": [
+        "메뉴 입력",
+        "랜덤 추첨",
+        "최근 결과 기록"
+      ],
+      "steps": [
+        "메뉴를 한 줄에 하나씩 입력합니다.",
+        "뽑기 버튼을 누릅니다.",
+        "결과를 확인합니다."
+      ],
+      "notice": null,
+      "supportedOS": [],
+      "githubUrl": "https://example.org/wondamsodam-sample/github/day-1-sodam",
+      "releaseUrl": null,
+      "tags": [],
+      "thumbnail": "/thumbnails/day-001-sodam.webp",
+      "title": "오늘 뭐 먹지?",
+      "summary": "먹고 싶은 메뉴를 적으면 하나를 골라 주는 웹앱",
+      "category": "web",
+      "supportedDevices": [
+        "desktop",
+        "mobile"
+      ],
+      "recommendedDevice": "mobile",
+      "launchUrl": "https://example.org/wondamsodam-sample/day-1/sodam"
+    },
+    "seowon": {
+      "visibility": "published",
+      "description": "선택지를 추가하고 룰렛을 돌리면 화살표가 멈춘 칸이 오늘의 선택이 됩니다.",
+      "features": [
+        "선택지 추가",
+        "룰렛 회전 애니메이션"
+      ],
+      "steps": [
+        "선택지를 입력합니다.",
+        "룰렛을 돌립니다."
+      ],
+      "notice": null,
+      "supportedOS": [],
+      "githubUrl": null,
+      "releaseUrl": null,
+      "tags": [],
+      "thumbnail": "/thumbnails/day-001-seowon.webp",
+      "title": "운명의 룰렛",
+      "summary": "선택지를 룰렛으로 돌려 보는 프로그램",
+      "category": "web",
+      "supportedDevices": [
+        "desktop",
+        "mobile"
+      ],
+      "recommendedDevice": null,
+      "launchUrl": "https://example.org/wondamsodam-sample/day-1/seowon"
+    }
+  }
+}

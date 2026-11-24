@@ -1,0 +1,40 @@
+---
+// 404 — 공식 캐릭터 시트와 일치하는 인트로 컷(앉은 소담·서원)을 그대로 사용. 새 그림을 만들지 않는다.
+import Base from '../layouts/Base.astro';
+import { intro } from '../lib/intro-assets.mjs';
+import { withBase } from '../lib/paths.mjs';
+---
+<Base title="페이지를 찾을 수 없어요" noindex>
+  <section class="nf">
+    <div class="wrap nf-inner">
+      <div class="nf-chars" aria-hidden="true">
+        <img src={intro.sodam.idle_closed.src} alt="" width={intro.sodam.idle_closed.width} height={intro.sodam.idle_closed.height} />
+        <img src={intro.seowon.idle_closed.src} alt="" width={intro.seowon.idle_closed.width} height={intro.seowon.idle_closed.height} />
+      </div>
+      <div class="nf-text">
+        <p class="nf-code day-num">404</p>
+        <h1 class="nf-title">페이지를 찾을 수 없어요</h1>
+        <p class="nf-desc">주소가 바뀌었거나, 비공개로 전환된 회차일 수 있어요.<br />소담과 서원이 아카이브에서 기다리고 있어요.</p>
+        <p class="nf-actions">
+          <a class="btn btn-solid" href={withBase('/#archive')}>아카이브로 돌아가기</a>
+          <a class="btn" href={withBase('/')}>처음 화면</a>
+        </p>
+      </div>
+    </div>
+  </section>
+</Base>
+
+<style>
+  .nf { padding: clamp(32px, 8vw, 96px) 0; border-bottom: 1px solid var(--rule); }
+  .nf-inner { display: grid; grid-template-columns: 1.1fr 1fr; gap: clamp(24px, 5vw, 64px); align-items: center; }
+  .nf-chars { display: grid; grid-template-columns: 1fr 1fr; align-items: end; border-bottom: 2px solid var(--charcoal); max-width: 560px; }
+  .nf-chars img { width: 100%; height: auto; }
+  .nf-code { font-size: clamp(64px, 10vw, 120px); line-height: 1; color: var(--lilac); }
+  .nf-title { font-size: clamp(24px, 3vw, 34px); font-weight: 800; margin-top: 8px; }
+  .nf-desc { color: var(--muted); margin-top: 12px; }
+  .nf-actions { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 24px; }
+  @media (max-width: 760px) {
+    .nf-inner { grid-template-columns: 1fr; }
+    .nf-chars { max-width: 380px; margin: 0 auto; }
+  }
+</style>

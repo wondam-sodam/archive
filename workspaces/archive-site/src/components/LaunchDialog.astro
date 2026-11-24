@@ -1,0 +1,125 @@
+---
+// 기기별 실행 안내 모달 (하나를 공유). 네이티브 <dialog>: 포커스 가두기·ESC 닫기 지원, 닫으면 호출 요소로 포커스 복귀.
+---
+<dialog class="launch" id="launch-dialog" aria-labelledby="launch-title" aria-describedby="launch-desc">
+  <div class="launch-head">
+    <span class="eyebrow" id="launch-who">작품 안내</span>
+    <button type="button" class="launch-close" data-close aria-label="닫기">×</button>
+  </div>
+  <div class="launch-body">
+    <p class="launch-title" id="launch-title"></p>
+    <p class="launch-desc" id="launch-desc"></p>
+    <div class="launch-qr" id="launch-qr" hidden role="img" aria-label="작품 링크 QR 코드"></div>
+    <div class="launch-actions" id="launch-actions"></div>
+    <p class="launch-status" id="launch-status" role="status" aria-live="polite"></p>
+  </div>
+</dialog>
+
+<script>
+  import qrcode from 'qrcode-generator';
+  import { decideLaunch, detectEnv, OS_LABEL } from '../lib/launch.mjs';
+
+  type Data = { title: string; who: string; url: string | null; devices: string[]; rec: string | null; os: string[]; dayHref: string };
+
+  const dlg = document.getElementById('launch-dialog') as HTMLDialogElement | null;
+  const $ = (id: string) => document.getElementById(id)!;
+  let opener: HTMLElement | null = null;
+
+  function safeHttps(u: string | null) {
+    try { return u && new URL(u).protocol === 'https:' ? u : null; } catch { return null; }
+  }
+
+  async function copy(text: string) {
+    try {
+      await navigator.clipboard.writeText(text);
+      return true;
+    } catch {
+      const ta = document.createElement('textarea');
+      ta.value = text; ta.setAttribute('readonly', ''); ta.style.position = 'fixed'; ta.style.opacity = '0';
+      dlg!.appendChild(ta); ta.select();
+      let ok = false;
+      try { ok = document.execCommand('copy'); } catch { ok = false; }
+      ta.remove();
+      return ok;
+    }
+  }
+
+  function button(label: string, onClick: () => void, solid = false) {
+    const b = document.createElement('button');
+    b.type = 'button'; b.className = solid ? 'btn btn-solid' : 'btn'; b.textContent = label;
+    b.addEventListener('click', onClick);
+    return b;
+  }
+  function link(label: string, href: string, external: boolean, solid = false) {
+    const a = document.createElement('a');
+    a.className = solid ? 'btn btn-solid' : 'btn'; a.textContent = label; a.href = href;
+    if (external) { a.target = '_blank'; a.rel = 'noopener noreferrer'; }
+    return a;
+  }
+
+  function open(d: Data, kind: string) {
+    if (!dlg) return;
+    const url = safeHttps(d.url);
+    const whoName = d.who === 'sodam' ? '소담' : '서원';
+    $('launch-who').textContent = `${whoName} · ${d.title}`;
+    const qr = $('launch-qr');
+    const actions = $('launch-actions');
+    const status = $('launch-status');
+    actions.replaceChildren(); status.textContent = ''; qr.hidden = true; qr.replaceChildren();
+
+    const copyBtn = (label: string) => button(label, async () => {
+      status.textContent = (await copy(url!)) ? '링크를 복사했어요.' : '복사하지 못했어요. 주소를 길게 눌러 직접 복사해 주세요: ' + url;
+    }, true);
+    const showQr = () => {
+      const q = qrcode(0, 'M'); q.addData(url!); q.make();
+      qr.innerHTML = q.createSvgTag({ cellSize: 6, margin: 4, scalable: true });
+      qr.hidden = false;
+    };
+
+    if (kind === 'unavailable' || !url) {
+      $('launch-title').textContent = '현재 체험할 수 없는 작품입니다';
+      $('launch-desc').textContent = '체험 링크가 아직 없거나 내려간 작품이에요. 그날의 기록에서 설명을 확인할 수 있어요.';
+      actions.append(link('그날의 기록 보기', d.dayHref, false));
+    } else if (kind === 'desktop-only') {
+      $('launch-title').textContent = 'PC에서 실행할 수 있는 작품이에요';
+      $('launch-desc').textContent = '링크를 복사해 두었다가 PC에서 열어 주세요. (휴대폰에서 PC를 직접 켜 주는 기능은 아니에요.)';
+      actions.append(copyBtn('PC용 링크 복사'), link('그날의 기록 보기', d.dayHref, false));
+    } else if (kind === 'mobile-recommended') {
+      $('launch-title').textContent = '모바일에서 더 편하게 사용할 수 있어요';
+      $('launch-desc').textContent = '휴대폰 카메라로 QR을 스캔하면 바로 열려요.';
+      showQr();
+      actions.append(copyBtn('모바일 링크 복사'), link('그냥 실행하기', url, true));
+    } else if (kind === 'mobile-only') {
+      $('launch-title').textContent = '모바일에서만 실행할 수 있는 작품이에요';
+      $('launch-desc').textContent = '휴대폰 카메라로 QR을 스캔하거나 링크를 휴대폰으로 옮겨 열어 주세요.';
+      showQr();
+      actions.append(copyBtn('모바일 링크 복사'));
+    } else if (kind === 'os-unsupported') {
+      const list = d.os.map((o) => (OS_LABEL as Record<string, string>)[o] ?? o).join(' · ');
+      $('launch-title').textContent = `${list}용 작품이에요`;
+      $('launch-desc').textContent = '지금 사용 중인 기기에서는 설치나 실행이 되지 않을 수 있어요. 지원하는 기기에서 열어 주세요.';
+      actions.append(copyBtn('링크 복사'), link('그래도 열기', url, true));
+    }
+    dlg.showModal();
+    (actions.querySelector('button, a') as HTMLElement | null)?.focus();
+  }
+
+  dlg?.addEventListener('click', (e) => {
+    const t = e.target as HTMLElement;
+    if (t.closest('[data-close]') || t === dlg) dlg.close(); // 배경(backdrop) 클릭 시 닫기
+  });
+  dlg?.addEventListener('close', () => { opener?.focus(); opener = null; });
+
+  document.addEventListener('click', (e) => {
+    const el = (e.target as HTMLElement).closest<HTMLElement>('[data-launch]');
+    if (!el || e.defaultPrevented || e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
+    let d: Data;
+    try { d = JSON.parse(el.dataset.launch!); } catch { return; }
+    const env = detectEnv();
+    const { kind } = decideLaunch({ launchUrl: safeHttps(d.url), supportedDevices: d.devices, recommendedDevice: d.rec, supportedOS: d.os }, env);
+    if (kind === 'direct') return; // 기본 링크 동작(새 창) 그대로
+    e.preventDefault();
+    opener = el;
+    open(d, kind);
+  });
+</script>

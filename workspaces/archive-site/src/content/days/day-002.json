@@ -1,0 +1,71 @@
+{
+  "schemaVersion": 1,
+  "day": 2,
+  "date": "2026-11-12",
+  "sample": true,
+  "mission": {
+    "title": "하루 한 줄",
+    "text": "오늘 하루를 한 줄로 남길 수 있는 도구를 만들어 보세요."
+  },
+  "visibility": "published",
+  "reelUrl": null,
+  "projects": {
+    "sodam": {
+      "visibility": "published",
+      "description": "날짜별로 한 줄씩 기록하고 달력에서 다시 볼 수 있어요.",
+      "features": [
+        "한 줄 기록",
+        "달력 보기"
+      ],
+      "steps": [
+        "앱을 설치합니다.",
+        "오늘의 한 줄을 적습니다."
+      ],
+      "notice": "Android 전용 샘플입니다.",
+      "supportedOS": [
+        "android"
+      ],
+      "githubUrl": null,
+      "releaseUrl": null,
+      "tags": [],
+      "thumbnail": "/thumbnails/day-002-sodam.webp",
+      "title": "한 줄 일기장",
+      "summary": "휴대폰에서 바로 쓰는 하루 한 줄 일기",
+      "category": "mobile_app",
+      "supportedDevices": [
+        "mobile"
+      ],
+      "recommendedDevice": "mobile",
+      "launchUrl": "https://example.org/wondamsodam-sample/day-2/sodam"
+    },
+    "seowon": {
+      "visibility": "published",
+      "description": "작은 위젯 창에 오늘 적은 문장을 계속 보여 줍니다.",
+      "features": [
+        "항상 위 고정",
+        "글꼴 크기 조절"
+      ],
+      "steps": [
+        "설치 파일을 내려받습니다.",
+        "실행 후 문장을 입력합니다."
+      ],
+      "notice": null,
+      "supportedOS": [
+        "windows",
+        "macos"
+      ],
+      "githubUrl": null,
+      "releaseUrl": "https://example.org/wondamsodam-sample/release/day-2-seowon",
+      "tags": [],
+      "thumbnail": "/thumbnails/day-002-seowon.webp",
+      "title": "오늘의 문장 위젯",
+      "summary": "바탕화면에 오늘의 한 줄을 띄워 주는 데스크톱 앱",
+      "category": "desktop_app",
+      "supportedDevices": [
+        "desktop"
+      ],
+      "recommendedDevice": null,
+      "launchUrl": "https://example.org/wondamsodam-sample/day-2/seowon"
+    }
+  }
+}

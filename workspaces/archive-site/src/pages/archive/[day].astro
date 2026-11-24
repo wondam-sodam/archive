@@ -1,0 +1,175 @@
+---
+// Day 상세: 공통 미션 / 두 작품(소담 먼저) / 설명 토글 / 릴스 / 이전·다음 회차
+// 공개 회차만 getStaticPaths 로 생성 → 비공개 회차 URL은 404
+import Base from '../../layouts/Base.astro';
+import Thumb from '../../components/Thumb.astro';
+import { allPublicDays } from '../../lib/content.mjs';
+import { formatDate, neighbors } from '../../lib/days.mjs';
+import { dayPath, withBase } from '../../lib/paths.mjs';
+import { CATEGORY_LABEL, CREATOR_LABEL } from '../../lib/day-schema.mjs';
+import { OS_LABEL } from '../../lib/launch.mjs';
+
+export function getStaticPaths() {
+  return allPublicDays.map((d) => ({ params: { day: String(d.day) }, props: { d } }));
+}
+
+const { d } = Astro.props as { d: any };
+const { prev, next } = neighbors(allPublicDays, d.day);
+const DEVICE_LABEL: Record<string, string> = { desktop: 'PC', mobile: '모바일' };
+const deviceText = (p: any) => {
+  const sup = p.supportedDevices.map((x: string) => DEVICE_LABEL[x]).join(' · ');
+  const rec = p.recommendedDevice ? ` (${DEVICE_LABEL[p.recommendedDevice]} 권장)` : '';
+  const os = p.supportedOS?.length ? ` · ${p.supportedOS.map((o: string) => (OS_LABEL as any)[o]).join('/')}` : '';
+  return `${sup}${rec}${os}`;
+};
+const backHref = withBase(`/?day=${d.day}#archive`);
+---
+<Base title={`DAY ${d.day} ${d.mission.title}`} description={`${d.mission.title} — ${d.mission.text}`}>
+  <article class="detail">
+    <div class="wrap">
+      <nav class="detail-top" aria-label="이동">
+        <a class="text-link back" href={backHref}>← 아카이브로</a>
+      </nav>
+
+      {d.sample && <p class="sample-banner">이 회차는 화면 확인용 <strong>샘플</strong>이에요. 링크는 예시 주소(example.org)입니다.</p>}
+
+      <header class="detail-head">
+        <p class="detail-meta"><span class="day-num">DAY {d.day}</span><time datetime={d.date}>{formatDate(d.date)}</time></p>
+        <h1 class="detail-title">{d.mission.title}</h1>
+        <p class="detail-mission"><span class="eyebrow">오늘의 미션</span><span class="mission-text">{d.mission.text}</span></p>
+      </header>
+
+      <div class="works">
+        {d.slots.map((p: any) => (
+          <section class={`work who-${p.who}`} aria-labelledby={`work-${p.who}`}>
+            <p class="who-tag" id={`work-${p.who}`}>{CREATOR_LABEL[p.who as 'sodam' | 'seowon']}의 작품</p>
+            {p.hidden ? (
+              <div class="thumb-hidden">공개 중단된 작품이에요</div>
+            ) : (
+              <>
+                <Thumb project={p} day={d.day} eager />
+                <h2 class="work-title">{p.title}</h2>
+                <p class="work-summary">{p.summary}</p>
+                <dl class="work-facts">
+                  <div><dt>유형</dt><dd>{CATEGORY_LABEL[p.category as keyof typeof CATEGORY_LABEL]}</dd></div>
+                  <div><dt>실행 환경</dt><dd>{deviceText(p)}</dd></div>
+                </dl>
+                <div class="work-links">
+                  {p.launchUrl ? (
+                    <a class="btn btn-solid" href={p.launchUrl} target="_blank" rel="noopener noreferrer" data-launch={JSON.stringify({ title: p.title, who: p.who, url: p.launchUrl, devices: p.supportedDevices, rec: p.recommendedDevice, os: p.supportedOS, dayHref: dayPath(d.day) })}>체험하기 ↗</a>
+                  ) : (
+                    <span class="btn is-disabled" aria-disabled="true">현재 체험할 수 없는 작품입니다</span>
+                  )}
+                  {p.githubUrl && <a class="btn" href={p.githubUrl} target="_blank" rel="noopener noreferrer">GitHub ↗</a>}
+                  {p.releaseUrl && <a class="btn" href={p.releaseUrl} target="_blank" rel="noopener noreferrer">Release ↗</a>}
+                </div>
+                <div class="toggle">
+                  <button type="button" class="toggle-btn" aria-expanded="false" aria-controls={`more-${p.who}`}>
+                    작품 설명 및 사용법<span class="toggle-icon" aria-hidden="true"></span>
+                  </button>
+                  <div class="toggle-body" id={`more-${p.who}`} hidden>
+                    {p.description && <div class="prose">{p.description.split(/\n{2,}/).map((para: string) => <p>{para}</p>)}</div>}
+                    {p.features?.length > 0 && (<><h3>주요 기능</h3><ul>{p.features.map((f: string) => <li>{f}</li>)}</ul></>)}
+                    {p.steps?.length > 0 && (<><h3>사용 방법</h3><ol>{p.steps.map((s: string) => <li>{s}</li>)}</ol></>)}
+                    {p.notice && (<><h3>추가 안내</h3><p class="notice">{p.notice}</p></>)}
+                    {!p.description && !p.features?.length && !p.steps?.length && !p.notice && <p class="muted">아직 등록된 설명이 없어요.</p>}
+                  </div>
+                </div>
+              </>
+            )}
+          </section>
+        ))}
+      </div>
+
+      <section class="reel" aria-labelledby="reel-title">
+        <h2 class="reel-heading" id="reel-title">그날의 릴스</h2>
+        {d.reelUrl ? (
+          <a class="reel-card" href={d.reelUrl} target="_blank" rel="noopener noreferrer">
+            <span class="reel-thumb" aria-hidden="true"><span class="reel-play"></span><span class="day-num">DAY {d.day}</span></span>
+            <span class="reel-text"><strong>인스타그램에서 릴스 보기 ↗</strong><span>두 작품을 만든 날의 통화 반응을 영상으로 볼 수 있어요.</span></span>
+          </a>
+        ) : (
+          <p class="muted">릴스를 준비하고 있어요.</p>
+        )}
+      </section>
+
+      <nav class="day-nav" aria-label="회차 이동">
+        {prev ? <a class="day-nav-link prev" href={dayPath(prev.day)} rel="prev"><span class="eyebrow">이전 회차</span><span><span class="day-num">DAY {prev.day}</span> {prev.mission.title}</span></a> : <span />}
+        {next ? <a class="day-nav-link next" href={dayPath(next.day)} rel="next"><span class="eyebrow">다음 회차</span><span><span class="day-num">DAY {next.day}</span> {next.mission.title}</span></a> : <span />}
+      </nav>
+    </div>
+  </article>
+</Base>
+
+<style>
+  .detail { padding: 20px 0 64px; }
+  .detail-top { padding: 4px 0 18px; }
+  .sample-banner { margin-bottom: 18px; }
+  .detail-head { display: grid; gap: 10px; padding: 8px 0 24px; border-bottom: 1px solid var(--rule); }
+  .detail-meta { display: flex; gap: 14px; align-items: baseline; color: var(--muted); font-size: 14px; }
+  .detail-meta .day-num { font-size: 26px; color: var(--charcoal); }
+  .detail-title { font-size: clamp(26px, 3.6vw, 40px); font-weight: 800; line-height: 1.25; letter-spacing: -0.015em; }
+  .detail-mission { display: grid; gap: 4px; max-width: 70ch; }
+  .mission-text { font-size: 17px; white-space: pre-line; }
+
+  .works { display: grid; grid-template-columns: 1fr 1fr; gap: 0; border-bottom: 1px solid var(--rule); }
+  .work { display: grid; gap: 12px; align-content: start; padding: 24px clamp(16px, 2.4vw, 32px) 28px 0; min-width: 0; }
+  .work + .work { padding: 24px 0 28px clamp(16px, 2.4vw, 32px); border-left: 1px solid var(--rule); }
+  .work-title { font-size: 21px; font-weight: 800; line-height: 1.35; margin-top: 4px; }
+  .work-summary { font-size: 16px; }
+  .work-facts { display: flex; flex-wrap: wrap; gap: 6px 24px; margin: 0; font-size: 14px; }
+  .work-facts div { display: flex; gap: 8px; }
+  .work-facts dt { color: var(--muted); }
+  .work-facts dd { margin: 0; font-weight: 600; }
+  .work-links { display: flex; flex-wrap: wrap; gap: 8px; }
+  .btn.is-disabled { border-style: dashed; color: var(--muted); cursor: default; font-weight: 500; }
+  .btn.is-disabled:hover { background: transparent; color: var(--muted); }
+
+  .toggle { border-top: 1px solid var(--rule-soft); margin-top: 6px; }
+  .toggle-btn { display: flex; justify-content: space-between; align-items: center; width: 100%; min-height: 48px; padding: 0; border: 0; background: none; font-weight: 700; font-size: 15px; cursor: pointer; text-align: left; }
+  .toggle-icon { position: relative; width: 14px; height: 14px; }
+  .toggle-icon::before, .toggle-icon::after { content: ''; position: absolute; left: 0; top: 6px; width: 14px; height: 2px; background: currentColor; transition: transform 0.2s; }
+  .toggle-icon::after { transform: rotate(90deg); }
+  .toggle-btn[aria-expanded='true'] .toggle-icon::after { transform: rotate(0deg); }
+  .toggle-body { display: grid; gap: 10px; padding: 4px 0 8px; font-size: 15px; }
+  .toggle-body h3 { font-size: 13px; letter-spacing: 0.08em; color: var(--who-ink); margin-top: 8px; }
+  .toggle-body ul, .toggle-body ol { margin: 0; padding-left: 1.3em; display: grid; gap: 4px; }
+  .prose { display: grid; gap: 8px; }
+  .notice { border-left: 3px solid var(--who); padding-left: 10px; }
+  .muted { color: var(--muted); }
+
+  .reel { padding: 28px 0; border-bottom: 1px solid var(--rule); display: grid; gap: 14px; }
+  .reel-heading { font-size: 13px; letter-spacing: 0.14em; font-weight: 700; color: var(--muted); }
+  .reel-card { display: flex; gap: 18px; align-items: center; text-decoration: none; max-width: 520px; }
+  .reel-thumb { position: relative; flex: none; width: 90px; aspect-ratio: 9 / 16; background: var(--charcoal); color: var(--cream); display: grid; place-items: center; border: 1px solid var(--charcoal); }
+  .reel-thumb .day-num { position: absolute; bottom: 8px; left: 0; right: 0; text-align: center; font-size: 13px; }
+  .reel-play { width: 0; height: 0; border-left: 18px solid var(--cream); border-top: 11px solid transparent; border-bottom: 11px solid transparent; margin-left: 4px; }
+  .reel-card:hover .reel-thumb { background: var(--lilac); border-color: var(--lilac); }
+  .reel-text { display: grid; gap: 4px; font-size: 14px; color: var(--muted); }
+  .reel-text strong { color: var(--charcoal); font-size: 16px; }
+
+  .day-nav { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; padding-top: 24px; }
+  .day-nav-link { display: grid; gap: 4px; padding: 14px 0; text-decoration: none; border-top: 2px solid var(--charcoal); }
+  .day-nav-link.next { text-align: right; }
+  .day-nav-link:hover { color: var(--lilac-ink); }
+  .day-nav-link .day-num { font-size: 18px; }
+
+  @media (max-width: 760px) {
+    .works { grid-template-columns: 1fr; }
+    .work, .work + .work { padding: 22px 0; border-left: 0; }
+    .work + .work { border-top: 1px solid var(--rule); }
+    .day-nav { grid-template-columns: 1fr; }
+    .day-nav-link.next { text-align: left; }
+  }
+</style>
+
+<script>
+  // 각 작품 설명 토글은 독립적으로 열림/닫힘 (기본 닫힘)
+  document.querySelectorAll<HTMLButtonElement>('.toggle-btn').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      const open = btn.getAttribute('aria-expanded') === 'true';
+      btn.setAttribute('aria-expanded', String(!open));
+      document.getElementById(btn.getAttribute('aria-controls')!)!.hidden = open;
+    });
+  });
+</script>

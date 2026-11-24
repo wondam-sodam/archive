@@ -1,0 +1,53 @@
+name: Deploy archive
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+defaults:
+  run:
+    working-directory: workspaces/archive-site
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: '24'
+          cache: npm
+          cache-dependency-path: workspaces/archive-site/package-lock.json
+      - run: npm ci
+      # 콘텐츠 검증 실패 시 배포하지 않음 (기존 사이트 유지)
+      - run: npm run validate:content
+      - run: npm run build
+        env:
+          ASTRO_TELEMETRY_DISABLED: '1'
+          # 저장소 이름이 <org>.github.io 이면 BASE_PATH 를 '/' 로 바꾼다
+          SITE_URL: https://wondam-sodam.github.io
+          BASE_PATH: /archive
+      - uses: actions/configure-pages@v5
+      - uses: actions/upload-pages-artifact@v4
+        with:
+          path: workspaces/archive-site/dist
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4
