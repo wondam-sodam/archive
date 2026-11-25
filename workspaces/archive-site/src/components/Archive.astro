@@ -106,9 +106,9 @@ const index = days.map(toIndexEntry);
 
 <style>
   .archive { position: relative; z-index: 1; background: linear-gradient(#fff 0, var(--cream) min(48vw, 520px)); padding: clamp(24px, 4vw, 48px) 0 clamp(48px, 8vw, 96px); scroll-margin-top: var(--header-h); }
-  /* 인트로가 흰색으로 다 바뀐 뒤(진행도 75%~) 아카이브가 흰 화면 위로 올라오도록 인트로 끝부분과 겹침 */
-  :global([data-intro][data-zoomable]) ~ .archive { margin-top: -22svh; }
-  @media (max-width: 700px) { :global([data-intro][data-zoomable]) ~ .archive { margin-top: -17svh; } }
+  /* 확대 인트로가 켜지면 아카이브 첫 화면이 인트로 마지막 화면 바로 밑에 겹쳐 있다가,
+     배너가 줌아웃으로 제자리에 놓인 뒤 인트로가 사라지며 드러난다 (intro-controller.ts) */
+  :global([data-intro][data-zoomable]) ~ .archive { margin-top: calc(var(--header-h) - 100svh); }
   /* 검색 배너: 원본 비율 그대로(잘라내지 않음) → 어떤 화면에서도 두 캐릭터가 온전히 보인다 */
   .search-banner { position: relative; margin: 0 auto clamp(20px, 3vw, 32px); max-width: 1120px; border: 1px solid var(--charcoal); background: #fbefe9; }
   .search-banner img { width: 100%; height: auto; aspect-ratio: 16 / 9; }
