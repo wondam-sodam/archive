@@ -5,8 +5,8 @@
   "type": "module",
   "description": "원담소담 공개 아카이브 (Astro 정적 사이트, GitHub Pages)",
   "scripts": {
-    "dev": "node scripts/optimize-intro.mjs && astro dev",
-    "prebuild": "node scripts/optimize-intro.mjs && node scripts/validate-content.mjs",
+    "dev": "node scripts/prepare-logo.mjs && astro dev",
+    "prebuild": "node scripts/prepare-logo.mjs && node scripts/validate-content.mjs",
     "build": "astro build",
     "preview": "astro preview",
     "validate:content": "node scripts/validate-content.mjs"

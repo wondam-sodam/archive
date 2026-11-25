@@ -41,6 +41,22 @@ for (const d of days) {
   }
 }
 
+// 인스타그램 링크 (src/config/social.json): 빈 값 또는 https://www.instagram.com/<아이디>/ 형식만 허용
+const IG_RE = /^https:\/\/(www\.)?instagram\.com\/[A-Za-z0-9._]{1,30}\/?$/;
+const socialPath = path.join(root, 'src/config/social.json');
+try {
+  const social = JSON.parse(await readFile(socialPath, 'utf8'));
+  for (const key of ['wondamsodam', 'sodam', 'seowon']) {
+    const v = social[key];
+    if (v === undefined || v === '') continue;
+    if (typeof v !== 'string' || !IG_RE.test(v.trim())) {
+      errors.push(`social.json ${key}: 인스타그램 주소 형식이 아니에요 → ${JSON.stringify(v)} (예: https://www.instagram.com/아이디/)`);
+    }
+  }
+} catch (e) {
+  errors.push(`src/config/social.json 을 읽을 수 없어요 (${e.message})`);
+}
+
 if (errors.length) {
   console.error(`[validate:content] 오류 ${errors.length}건\n- ${errors.join('\n- ')}`);
   process.exit(1);

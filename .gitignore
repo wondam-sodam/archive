@@ -26,7 +26,6 @@ playwright-report/
 Thumbs.db
 
 # 사이트 실행에 필요 없는 자산/로컬 전용 파일
-/workspaces/archive-site/public/assets/intro/monitor_on_temp_logo_REFERENCE_ONLY.png
-/workspaces/archive-site/public/assets/intro/web/
+/workspaces/archive-site/public/assets/brand/web/
 /workspaces/archive-site/.local/
 /workspaces/archive-site/src/generated/

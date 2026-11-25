@@ -4,7 +4,7 @@ import '@fontsource/jua/400.css';
 import '../styles/global.css';
 import { SITE } from '../config/site.mjs';
 import { withBase } from '../lib/paths.mjs';
-import { intro } from '../lib/intro-assets.mjs';
+import { logo } from '../lib/logo.mjs';
 import LaunchDialog from '../components/LaunchDialog.astro';
 
 interface Props {
@@ -41,7 +41,7 @@ const ogImage = new URL(withBase('/og.png'), Astro.site).href;
     <header class="site-header">
       <div class="wrap">
         <a class="brand" href={withBase('/')} aria-label={`${SITE.name} 홈`}>
-          <img src={intro.logo.src} alt="" width={intro.logo.width} height={intro.logo.height} />
+          <img src={logo.src} alt="" width={logo.width} height={logo.height} />
           <span class="visually-hidden">{SITE.name}</span>
         </a>
         <nav class="header-nav" aria-label="주요 메뉴">
