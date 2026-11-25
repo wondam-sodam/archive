@@ -98,7 +98,8 @@ const bannerSmall = withBase('/assets/archive/search-banner-900.webp');
     .stage { width: min(max(100cqw, calc(100cqh * var(--ar))), calc(125cqh * var(--ar))); }
   }
   .scene { width: 100%; height: 100%; }
-  .screen { position: absolute; left: var(--sc-l); top: var(--sc-t); width: var(--sc-w); height: var(--sc-h); display: grid; place-items: center; background: #fff; border-radius: 1.2% / 2%; }
+  .screen { position: absolute; left: var(--sc-l); top: var(--sc-t); width: var(--sc-w); height: var(--sc-h); display: grid; place-items: center; }
+  /* 일러스트 속 모니터 화면이 이미 흰색이라 배경 상자를 두지 않는다 — 상자가 있으면 PC에서 서원 머리카락이 모니터 가장자리에서 가려짐 */
   .screen-logo { width: 62%; height: auto; }
 
   .whiteout { position: absolute; inset: 0; z-index: 2; background: #fff; opacity: var(--white, 0); pointer-events: none; }
