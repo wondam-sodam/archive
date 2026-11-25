@@ -1,19 +1,38 @@
 ---
-// 404 — 공식 캐릭터 시트와 일치하는 인트로 컷(앉은 소담·서원)을 그대로 사용. 새 그림을 만들지 않는다.
+// 404 — 레퍼런스(assets/other-generated/페이지를_찾는_귀여운_탐험대.png) 구도를 따른다.
+// 상단 큰 404 + 카키 리본 제목 + 하트 구분선, 아래에 책상 앞에서 사라진 페이지를 찾는 소담·서원 일러스트.
+// 글자는 이미지에 굽지 않고 HTML 텍스트로 렌더(검색/스크린리더/번역 대응).
 import Base from '../layouts/Base.astro';
-import { intro } from '../lib/intro-assets.mjs';
 import { withBase } from '../lib/paths.mjs';
 ---
 <Base title="페이지를 찾을 수 없어요" noindex>
   <section class="nf">
     <div class="wrap nf-inner">
-      <div class="nf-chars" aria-hidden="true">
-        <img src={intro.sodam.idle_closed.src} alt="" width={intro.sodam.idle_closed.width} height={intro.sodam.idle_closed.height} />
-        <img src={intro.seowon.idle_closed.src} alt="" width={intro.seowon.idle_closed.width} height={intro.seowon.idle_closed.height} />
-      </div>
+      <header class="nf-head">
+        <p class="nf-code" aria-hidden="true">
+          <svg class="nf-heart nf-heart-l" viewBox="0 0 24 22" aria-hidden="true"><path d="M12 20.5S2 14.3 2 7.6A5 5 0 0 1 12 5a5 5 0 0 1 10 2.6c0 6.7-10 12.9-10 12.9Z" /></svg>
+          404
+          <svg class="nf-heart nf-heart-r" viewBox="0 0 24 22" aria-hidden="true"><path d="M12 20.5S2 14.3 2 7.6A5 5 0 0 1 12 5a5 5 0 0 1 10 2.6c0 6.7-10 12.9-10 12.9Z" /></svg>
+        </p>
+        <h1 class="nf-title"><span class="visually-hidden">404 — </span>페이지를 찾을 수 없어요</h1>
+        <p class="nf-rule" aria-hidden="true">
+          <span></span>
+          <svg viewBox="0 0 24 22"><path d="M12 20.5S2 14.3 2 7.6A5 5 0 0 1 12 5a5 5 0 0 1 10 2.6c0 6.7-10 12.9-10 12.9Z" /></svg>
+          <span></span>
+        </p>
+      </header>
+
+      <figure class="nf-scene">
+        <img
+          src={withBase('/assets/404/lost-page.webp')}
+          alt="책상 앞에서 물음표가 그려진 사라진 페이지를 갸웃거리며 바라보는 소담과, 돋보기로 살펴보는 서원"
+          width="1200"
+          height="667"
+          decoding="async"
+        />
+      </figure>
+
       <div class="nf-text">
-        <p class="nf-code day-num">404</p>
-        <h1 class="nf-title">페이지를 찾을 수 없어요</h1>
         <p class="nf-desc">주소가 바뀌었거나, 비공개로 전환된 회차일 수 있어요.<br />소담과 서원이 아카이브에서 기다리고 있어요.</p>
         <p class="nf-actions">
           <a class="btn btn-solid" href={withBase('/#archive')}>아카이브로 돌아가기</a>
@@ -25,16 +44,84 @@ import { withBase } from '../lib/paths.mjs';
 </Base>
 
 <style>
-  .nf { padding: clamp(32px, 8vw, 96px) 0; border-bottom: 1px solid var(--rule); }
-  .nf-inner { display: grid; grid-template-columns: 1.1fr 1fr; gap: clamp(24px, 5vw, 64px); align-items: center; }
-  .nf-chars { display: grid; grid-template-columns: 1fr 1fr; align-items: end; border-bottom: 2px solid var(--charcoal); max-width: 560px; }
-  .nf-chars img { width: 100%; height: auto; }
-  .nf-code { font-size: clamp(64px, 10vw, 120px); line-height: 1; color: var(--lilac); }
-  .nf-title { font-size: clamp(24px, 3vw, 34px); font-weight: 800; margin-top: 8px; }
-  .nf-desc { color: var(--muted); margin-top: 12px; }
-  .nf-actions { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 24px; }
-  @media (max-width: 760px) {
-    .nf-inner { grid-template-columns: 1fr; }
-    .nf-chars { max-width: 380px; margin: 0 auto; }
+  .nf {
+    padding: clamp(28px, 6vw, 72px) 0 clamp(40px, 7vw, 88px);
+    border-bottom: 1px solid var(--rule);
+    background:
+      radial-gradient(ellipse 62% 58% at 50% 62%, var(--lavender) 0%, rgba(233, 227, 243, 0.55) 45%, transparent 72%),
+      var(--cream);
+    overflow: hidden;
+  }
+  .nf-inner { display: flex; flex-direction: column; align-items: center; text-align: center; }
+
+  .nf-head { display: flex; flex-direction: column; align-items: center; }
+  .nf-code {
+    position: relative;
+    font-family: var(--font-display);
+    font-size: clamp(88px, 16vw, 176px);
+    line-height: 0.9;
+    letter-spacing: 0.02em;
+    color: var(--lilac);
+    -webkit-text-stroke: 0;
+    text-shadow: 0 0 0 var(--cream), 0 4px 0 rgba(48, 45, 57, 0.08);
+    padding: 0 0.32em;
+  }
+  .nf-heart {
+    position: absolute;
+    width: clamp(22px, 3vw, 38px);
+    height: auto;
+    fill: none;
+    stroke: var(--lilac);
+    stroke-width: 1.8;
+  }
+  .nf-heart-l { left: 0; top: 18%; transform: rotate(-12deg); }
+  .nf-heart-r { right: 0; top: 42%; transform: rotate(10deg); }
+
+  .nf-title {
+    margin-top: clamp(14px, 2vw, 22px);
+    position: relative;
+    display: inline-block;
+    padding: 0.42em 2.1em;
+    font-size: clamp(18px, 2.6vw, 28px);
+    font-weight: 800;
+    letter-spacing: -0.01em;
+    color: var(--cream);
+    background: var(--khaki);
+    /* 양 끝이 V자로 파인 리본 — 둥근 카드 대신 직선 컷 */
+    clip-path: polygon(0 0, 100% 0, calc(100% - 0.9em) 50%, 100% 100%, 0 100%, 0.9em 50%);
+  }
+
+  .nf-rule {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin-top: clamp(12px, 1.6vw, 18px);
+  }
+  .nf-rule span { display: block; width: clamp(44px, 7vw, 84px); height: 2px; background: var(--lilac); opacity: 0.7; }
+  .nf-rule svg { width: 22px; height: auto; fill: none; stroke: var(--lilac); stroke-width: 2; }
+
+  .nf-scene {
+    margin: clamp(4px, 1vw, 12px) 0 0;
+    width: min(100%, 880px);
+    border-bottom: 2px solid var(--charcoal); /* 공유 책상 상판 */
+  }
+  .nf-scene img { display: block; width: 100%; height: auto; }
+
+  .nf-text { margin-top: clamp(20px, 3vw, 32px); }
+  .nf-desc { color: var(--muted); }
+  .nf-actions { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; margin-top: 22px; }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .nf-heart-l { animation: nf-bob 3.2s ease-in-out infinite; }
+    .nf-heart-r { animation: nf-bob 3.2s ease-in-out 1.1s infinite; }
+    @keyframes nf-bob {
+      0%, 100% { translate: 0 0; }
+      50% { translate: 0 -5px; }
+    }
+  }
+
+  @media (max-width: 560px) {
+    .nf-title { padding: 0.45em 1.6em; }
+    .nf-desc br { display: none; }
   }
 </style>
