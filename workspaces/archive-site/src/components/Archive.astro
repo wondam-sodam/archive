@@ -20,10 +20,12 @@ const index = days.map(toIndexEntry);
         <span class="browser-url">wondam-sodam.github.io/archive</span>
       </div>
       <div class="browser-body">
-        <figure class="search-banner">
-          <img src={withBase('/assets/archive/search-banner.webp')} srcset={`${withBase('/assets/archive/search-banner-900.webp')} 900w, ${withBase('/assets/archive/search-banner.webp')} 1600w`} sizes="(max-width: 1216px) 100vw, 1120px" alt="책상에 나란히 앉아 턱을 괴고 웃는 소담과 서원, 그 위로 검색창과 기록 아이콘들이 떠 있는 그림" width="1600" height="900" decoding="async" />
+        <figure class="search-banner" style={`--banner-bg: url(${withBase('/assets/archive/search-banner-900.webp')})`}>
+          <span class="search-banner-frame">
+          <img src={withBase('/assets/archive/search-banner.webp')} srcset={`${withBase('/assets/archive/search-banner-900.webp')} 900w, ${withBase('/assets/archive/search-banner.webp')} 1600w`} sizes="100vw" alt="책상에 나란히 앉아 턱을 괴고 웃는 소담과 서원, 그 위로 검색창과 기록 아이콘들이 떠 있는 그림" width="1600" height="900" decoding="async" />
           {/* 그림 속 검색창을 누르면 실제 검색 입력칸으로 이동 */}
           <label class="search-banner-hit" for="day-search" aria-hidden="true"></label>
+          </span>
         </figure>
         <div class="archive-head">
           <div class="archive-head-title">
@@ -111,7 +113,22 @@ const index = days.map(toIndexEntry);
   :global([data-intro][data-zoomable]) ~ .archive { margin-top: calc(var(--header-h) - 100svh); }
   /* 검색 배너: 원본 비율 그대로(잘라내지 않음) → 어떤 화면에서도 두 캐릭터가 온전히 보인다 */
   .search-banner { position: relative; margin: 0 auto clamp(20px, 3vw, 32px); max-width: 1120px; border: 1px solid var(--charcoal); background: #fbefe9; }
+  .search-banner-frame { position: relative; display: block; }
   .search-banner img { width: 100%; height: auto; aspect-ratio: 16 / 9; }
+  /* PC: 아카이브 맨 위에 여백 없이 화면 폭 전체 띠(헤더처럼). 그림은 잘리지 않게 가운데에 원본 비율로,
+     양옆 남는 곳은 같은 그림을 흐리게 채운다 */
+  @media (min-width: 901px) {
+    .archive { padding-top: 0; overflow-x: clip; }
+    .search-banner { margin: 0 calc(50% - 50vw) clamp(20px, 3vw, 32px); max-width: none; border: 0; border-bottom: 1px solid var(--rule); overflow: hidden; background: #fbefe9; }
+    .search-banner::before { content: ''; position: absolute; inset: -8%; background: var(--banner-bg) center / cover; filter: blur(28px) saturate(1.05); opacity: 0.85; }
+    .search-banner-frame { height: max(320px, min(56.25vw, calc(100svh - var(--header-h) - 170px))); aspect-ratio: 16 / 9; margin: 0 auto; }
+    .search-banner img { height: 100%; }
+  }
+  /* 인트로 줌아웃이 끝나기 전에는 배너 외의 내용을 숨겼다가, 배너가 제자리에 놓이면 서서히 나타낸다 */
+  .archive :is(.browser-bar, .archive-head, .sample-banner, .archive-grid),
+  .archive .search-banner::before { transition: opacity 0.5s ease; }
+  :global([data-intro][data-zoomable]:not([data-done])) ~ .archive :is(.browser-bar, .archive-head, .sample-banner, .archive-grid),
+  :global([data-intro][data-zoomable]:not([data-done])) ~ .archive .search-banner::before { opacity: 0; }
   /* 원본 1672×941 기준 그림 속 검색창 위치 (x 620–1050, y 237–305) */
   .search-banner-hit { position: absolute; left: 37%; top: 24.6%; width: 26%; height: 8.4%; cursor: text; }
   .browser-bar, .quick-entry { display: none; }
@@ -175,6 +192,9 @@ const index = days.map(toIndexEntry);
     .browser-dots i:nth-child(3) { background: #fff; }
     .browser-url { flex: 1; min-width: 0; height: 24px; padding: 0 8px; display: flex; align-items: center; border: 1px solid var(--rule-soft); background: #fff; font-size: 12px; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
     .search-banner { margin: 0; max-width: none; border: 0; border-bottom: 1px solid var(--rule-soft); }
+    /* 위쪽 여백 없이 헤더 바로 밑에 화면 폭 전체로 붙는 브라우저 창 */
+    .archive { padding-top: 0; }
+    .browser { margin-inline: calc(-1 * var(--gutter)); border-width: 0 0 1px; box-shadow: 0 6px 0 var(--lavender); }
     /* 검색 엔진 첫 화면처럼: 제목은 숨기고 큰 검색창 + 진입 버튼만 */
     .archive-head { display: grid; gap: 14px; padding: 20px 16px 22px; border-bottom: 0; }
     .archive-head-title { position: absolute !important; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }

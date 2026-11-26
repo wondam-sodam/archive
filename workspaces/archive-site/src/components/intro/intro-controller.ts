@@ -3,8 +3,8 @@
 //   0.00–0.42  모니터 화면(로고)이 화면 전체를 덮도록 확대
 //   0.30–0.46  흰색으로 전환
 //   0.44–0.54  회차 검색 배너가 크게 확대된 상태(그림 속 검색창이 화면 가운데)로 흰 화면 위에 나타남
-//   0.46–0.90  배너가 줌아웃되며 아래 아카이브의 실제 배너 자리로 들어감 (매 프레임 실제 위치를 따라감)
-//   0.90–1.00  인트로 전체가 사라지며 같은 자리의 실제 배너와 검색창이 드러남 → 이후 일반 스크롤
+//   0.46–0.95  배너가 가로 가운데를 유지한 채 줌아웃되며, 진행도 1에서 실제 배너가 놓일 자리(헤더 바로 밑)로 곧장 들어감
+//   1.00       인트로가 사라지고 같은 자리의 실제 배너로 바뀜 → 검색창 등 나머지는 CSS로 서서히 나타남 → 이후 일반 스크롤
 // - 모션 감소 설정이거나 오류가 나면 확대 없이 정지 화면으로 남고, 아래 HTML 아카이브/검색은 그대로 동작한다.
 
 const easeInOut = (t: number) => (t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2);
@@ -70,18 +70,20 @@ function setupZoom(root: HTMLElement) {
     const a = range(p, 0.44, 0.54);
     reveal.style.opacity = a.toFixed(3);
     if (!target || a === 0) return;
-    // 실제 배너의 지금 위치(sticky 기준) — 줌아웃이 끝나면 이 자리에 정확히 겹친다
+    // 실제 배너가 진행도 1에서 놓일 위치(sticky 기준). 아카이브는 스크롤과 함께 일정하게 올라오므로
+    // 지금 위치에서 남은 스크롤 거리만큼 빼면 된다 → 목표가 움직이지 않아 화면 가운데에서 곧장 줌아웃
     const st = sticky.getBoundingClientRect();
     const tr = target.getBoundingClientRect();
     if (!tr.width || !tr.height) return;
-    const R = { x: tr.left - st.left, y: tr.top - st.top, w: tr.width, h: tr.height };
+    const left = (1 - p) * (root.offsetHeight - sticky.offsetHeight);
+    const R = { x: tr.left - st.left, y: tr.top - st.top - left, w: tr.width, h: tr.height };
     reveal.style.left = `${R.x}px`;
     reveal.style.top = `${R.y}px`;
     reveal.style.width = `${R.w}px`;
     reveal.style.height = `${R.h}px`;
 
     const z0 = (st.width / R.w) * REVEAL_START;
-    const e = easeInOut(range(p, 0.46, 0.9));
+    const e = easeInOut(range(p, 0.46, 0.95));
     const z = z0 + (1 - z0) * e;
     // 검색창 중심 F 가 처음엔 화면 가운데, 끝엔 제자리에 오도록 (transform-origin 0 0 기준)
     const fx = R.w * FOCUS.x;
@@ -104,8 +106,7 @@ function setupZoom(root: HTMLElement) {
     zoomer.style.setProperty('--ty', `${(cy - z * C.y).toFixed(2)}px`);
     whiteout.style.setProperty('--white', range(p, 0.3, 0.46).toFixed(3));
     updateReveal(p);
-    sticky.style.setProperty('--fade', (1 - range(p, 0.9, 0.995)).toFixed(3));
-    if (p >= 0.995) root.dataset.done = '';
+    if (p >= 0.999) root.dataset.done = '';
     else delete root.dataset.done;
   }
 
