@@ -42,9 +42,9 @@
 
 | 계정 | 주소 |
 |---|---|
-| 원담소담 | 곧 연결할 예정이에요 |
-| 소담 | 곧 연결할 예정이에요 |
-| 서원 | 곧 연결할 예정이에요 |
+| 원담소담 | [@wondam_sodam.log](https://www.instagram.com/wondam_sodam.log/) |
+| 소담 | [@sodam.wd](https://www.instagram.com/sodam.wd/) |
+| 서원 | [@seowon.wd](https://www.instagram.com/seowon.wd/) |
 
 ---
 
