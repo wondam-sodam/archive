@@ -195,6 +195,12 @@ const index = days.map(toIndexEntry);
     /* 위쪽 여백 없이 헤더 바로 밑에 화면 폭 전체로 붙는 브라우저 창 */
     .archive { padding-top: 0; }
     .browser { margin-inline: calc(-1 * var(--gutter)); border-width: 0 0 1px; box-shadow: 0 6px 0 var(--lavender); }
+    /* 배너를 헤더 바로 밑 맨 위에 붙이고, 주소창 줄은 배너 아래(검색창 위)로 */
+    .browser { display: flex; flex-direction: column; }
+    .browser-body { display: contents; }
+    .search-banner { order: 0; border-bottom: 0; }
+    .browser-bar { order: 1; border-top: 1px solid var(--charcoal); }
+    .archive-head { order: 2; }
     /* 검색 엔진 첫 화면처럼: 제목은 숨기고 큰 검색창 + 진입 버튼만 */
     .archive-head { display: grid; gap: 14px; padding: 20px 16px 22px; border-bottom: 0; }
     .archive-head-title { position: absolute !important; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
