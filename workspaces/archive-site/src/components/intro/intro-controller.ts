@@ -38,11 +38,13 @@ function setupZoom(root: HTMLElement) {
   const reveal = root.querySelector<HTMLElement>('[data-reveal]')!;
   const target = document.querySelector<HTMLElement>('.search-banner img');
   const sticky = viewport.parentElement!;
+  const caption = root.querySelector<HTMLElement>('.intro-caption');
   if (!zoomer || !screen || !whiteout || !reveal) throw new Error('intro markup missing');
 
   let C = { x: 0, y: 0 }; // 모니터 화면 중심 (뷰포트 좌표)
   let V = { x: 0, y: 0 }; // 뷰포트 중심
-  let S = 1; // 모니터 화면 폭이 뷰포트 폭을 넘어서는 배율 (남는 위아래는 흰색 전환이 덮는다)
+  let S = 1; // 모니터 화면이 뷰포트를 가로·세로 모두 덮는 배율 → 모니터 안으로 완전히 들어가는 느낌
+  const logo = screen.querySelector<HTMLElement>('.screen-logo');
   let ticking = false;
 
   function measure() {
@@ -53,9 +55,12 @@ function setupZoom(root: HTMLElement) {
     const sr = screen.getBoundingClientRect();
     if (!sr.width || !sr.height) return;
     C = { x: sr.left - vr.left + sr.width / 2, y: sr.top - vr.top + sr.height / 2 };
-    V = { x: vr.width / 2, y: vr.height / 2 };
-    // 세로 화면에서 높이까지 덮으려면 7배 이상 확대돼 로고가 뭉개지므로 폭 기준으로만 확대
-    S = (vr.width / sr.width) * 1.12;
+    // 확대 중에는 문구 줄 자리까지 장면이 덮으므로, 문구 줄을 포함한 전체 높이 기준으로 가운데·배율을 잡는다
+    const fullH = vr.height + (caption ? caption.offsetHeight : 0);
+    V = { x: vr.width / 2, y: fullH / 2 };
+    // 화면 전체를 모니터 화면이 덮을 때까지 확대 (세로 화면에서는 5배 이상).
+    // 로고가 너무 커지면 뭉개지므로 3배를 넘어서면서 로고를 서서히 지워 '로고를 통과해 들어가는' 느낌으로 처리
+    S = Math.max(vr.width / sr.width, fullH / sr.height) * 1.08;
     update();
   }
 
@@ -74,7 +79,7 @@ function setupZoom(root: HTMLElement) {
     // 지금 위치에서 남은 스크롤 거리만큼 빼면 된다 → 목표가 움직이지 않아 화면 가운데에서 곧장 줌아웃
     const st = sticky.getBoundingClientRect();
     const tr = target.getBoundingClientRect();
-    if (!tr.width || !tr.height) return;
+    if (!tr.width || !tr.height) { reveal.style.opacity = '0'; return; }
     const left = (1 - p) * (root.offsetHeight - sticky.offsetHeight);
     const R = { x: tr.left - st.left, y: tr.top - st.top - left, w: tr.width, h: tr.height };
     reveal.style.left = `${R.x}px`;
@@ -102,9 +107,16 @@ function setupZoom(root: HTMLElement) {
     const cx = C.x + (V.x - C.x) * e;
     const cy = C.y + (V.y - C.y) * e;
     zoomer.style.setProperty('--zoom', z.toFixed(4));
+    if (logo) logo.style.opacity = (1 - clamp01((z - 3) / 2)).toFixed(3);
     zoomer.style.setProperty('--tx', `${(cx - z * C.x).toFixed(2)}px`);
     zoomer.style.setProperty('--ty', `${(cy - z * C.y).toFixed(2)}px`);
-    whiteout.style.setProperty('--white', range(p, 0.3, 0.46).toFixed(3));
+    // 확대가 시작되면 아래 문구 줄을 걷어내 화면 전체가 모니터 안으로 들어가도록
+    if (caption) {
+      const k = range(p, 0.04, 0.2);
+      caption.style.opacity = (1 - k).toFixed(3);
+      viewport.style.setProperty('--cap-grow', `${(caption.offsetHeight * k).toFixed(1)}px`);
+    }
+    whiteout.style.setProperty('--white', range(p, 0.36, 0.46).toFixed(3));
     updateReveal(p);
     if (p >= 0.999) root.dataset.done = '';
     else delete root.dataset.done;

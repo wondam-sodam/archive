@@ -77,9 +77,10 @@ const bannerSmall = withBase('/assets/archive/search-banner-900.webp');
   .intro[data-zoomable] { --zoom-run: 140svh; z-index: 2; background: transparent; }
   .intro[data-done] { pointer-events: none; }
   .intro[data-done] .intro-sticky { visibility: hidden; }
-  .intro-sticky { position: sticky; top: var(--header-h); height: var(--vh); min-height: 420px; display: flex; flex-direction: column; overflow: hidden; }
+  .intro-sticky { position: sticky; top: var(--header-h); height: var(--vh); min-height: 420px; display: flex; flex-direction: column; overflow: hidden; background: #fae9e3; }
 
-  .intro-viewport { position: relative; flex: 1 1 auto; min-height: 0; overflow: hidden; background: #fae9e3; container-type: size; border-bottom: 1px solid var(--rule); }
+  /* overflow 대신 clip-path로 자른다 → 확대가 시작되면 아래쪽 잘림을 문구 줄 높이만큼 늘려 장면이 문구 줄을 덮는다 */
+  .intro-viewport { position: relative; z-index: 1; flex: 1 1 auto; min-height: 0; clip-path: inset(0 0 calc(-1 * var(--cap-grow, 0px)) 0); background: #fae9e3; container-type: size; }
   /* 화면 비율이 일러스트와 다를 때 남는 부분을 같은 그림의 흐린 버전으로 채운다 */
   .scene-backdrop { position: absolute; inset: -8%; width: 116%; height: 116%; max-width: none; object-fit: cover; filter: blur(28px) saturate(1.05); opacity: 0.85; }
 
@@ -107,7 +108,7 @@ const bannerSmall = withBase('/assets/archive/search-banner-900.webp');
   .reveal img { width: 100%; height: 100%; }
 
   /* ---- 캡션 ---- */
-  .intro-caption { flex: none; background: var(--cream); }
+  .intro-caption { position: relative; z-index: 0; flex: none; background: var(--cream); }
   .caption-inner { display: flex; align-items: center; justify-content: space-between; gap: 12px 24px; padding-top: 14px; padding-bottom: 14px; flex-wrap: wrap; }
   .slogan { font-family: var(--font-display); font-size: clamp(20px, 2.4vw, 28px); line-height: 1.25; }
   .caption-sub { font-size: 14px; color: var(--muted); margin-top: 2px; }

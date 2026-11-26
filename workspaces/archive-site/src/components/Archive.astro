@@ -119,7 +119,7 @@ const index = days.map(toIndexEntry);
      양옆 남는 곳은 같은 그림을 흐리게 채운다 */
   @media (min-width: 901px) {
     .archive { padding-top: 0; overflow-x: clip; }
-    .search-banner { margin: 0 calc(50% - 50vw) clamp(20px, 3vw, 32px); max-width: none; border: 0; border-bottom: 1px solid var(--rule); overflow: hidden; background: #fbefe9; }
+    .search-banner { margin: 0 calc(50% - 50vw) clamp(20px, 3vw, 32px); max-width: none; border: 0; overflow: hidden; background: #fbefe9; }
     .search-banner::before { content: ''; position: absolute; inset: -8%; background: var(--banner-bg) center / cover; filter: blur(28px) saturate(1.05); opacity: 0.85; }
     .search-banner-frame { height: max(320px, min(56.25vw, calc(100svh - var(--header-h) - 170px))); aspect-ratio: 16 / 9; margin: 0 auto; }
     .search-banner img { height: 100%; }
@@ -201,6 +201,14 @@ const index = days.map(toIndexEntry);
     .search-banner { order: 0; border-bottom: 0; }
     .browser-bar { order: 1; border-top: 1px solid var(--charcoal); }
     .archive-head { order: 2; }
+    /* 처음: 배너 + 화면 가운데 검색창만 한 화면 가득 (소개는 한 번 더 내려야 보임)
+       검색 모드(data-searching): 배너가 접히며 검색창이 맨 위로, 그 아래 회차 정보 */
+    .archive { min-height: calc(100svh - var(--header-h)); }
+    .archive[data-collapsed]:not([data-searching]) .browser { min-height: calc(100svh - var(--header-h)); }
+    .archive[data-collapsed]:not([data-searching]) .archive-head { margin-block: auto; padding-bottom: 12vh; }
+    .search-banner { max-height: 80vw; overflow: hidden; transition: max-height 0.35s ease, opacity 0.25s ease; }
+    .archive[data-searching] .search-banner { max-height: 0; opacity: 0; }
+    @media (prefers-reduced-motion: reduce) { .search-banner { transition: none; } }
     /* 검색 엔진 첫 화면처럼: 제목은 숨기고 큰 검색창 + 진입 버튼만 */
     .archive-head { display: grid; gap: 14px; padding: 20px 16px 22px; border-bottom: 0; }
     .archive-head-title { position: absolute !important; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
@@ -314,10 +322,30 @@ const index = days.map(toIndexEntry);
     };
     if (!q && !want) section.dataset.collapsed = '';
     for (const b of quick) b.setAttribute('aria-pressed', 'false');
-    const showList = () => document.getElementById('result-count')!.scrollIntoView({ block: 'start', behavior: 'smooth' });
+    // 검색 모드(모바일): 배너를 접어 검색창을 화면 맨 위로 올리고, 그 아래에 회차 정보가 나온다
+    // 인트로가 확실히 끝난 위치가 되도록 2px 더 내려 맞춘다 (인트로 진행도 1 직전이면 인트로가 화면을 덮음)
+    const toTop = () => {
+      const headerH = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--header-h')) || 56;
+      window.scrollTo({ top: Math.ceil(section.getBoundingClientRect().top + window.scrollY - headerH + 2), behavior: 'instant' as ScrollBehavior });
+    };
+    const enterSearch = () => {
+      if (!mq.matches || section.hasAttribute('data-searching')) return;
+      section.dataset.searching = '';
+      requestAnimationFrame(toTop);
+    };
+    if (q || want) section.dataset.searching = '';
+    input.addEventListener('focus', enterSearch);
+    // 아무것도 찾지 않고 검색창을 떠나면 처음(배너 + 가운데 검색창)으로 돌아간다
+    input.addEventListener('blur', () => {
+      setTimeout(() => {
+        if (input.value.trim() || !section.hasAttribute('data-collapsed') || quick.includes(document.activeElement as HTMLButtonElement)) return;
+        delete section.dataset.searching;
+      }, 250);
+    });
+    const showList = () => { enterSearch(); requestAnimationFrame(toTop); };
 
     input.addEventListener('input', () => {
-      if (input.value.trim()) expand(null);
+      if (input.value.trim()) { enterSearch(); expand(null); }
     });
     for (const b of quick) {
       b.addEventListener('click', () => {
