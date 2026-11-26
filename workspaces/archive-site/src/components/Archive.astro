@@ -204,13 +204,15 @@ const index = days.map(toIndexEntry);
     /* 처음: 배너 + 화면 가운데 검색창만 한 화면 가득 (소개는 한 번 더 내려야 보임)
        검색 모드(data-searching): 배너가 접히며 검색창이 맨 위로, 그 아래 회차 정보 */
     .archive { min-height: calc(100svh - var(--header-h)); }
+    /* 검색 영역과 소개 사이를 넉넉히 띄워, 조금 내리자마자 소개가 바로 붙어 보이지 않게 */
+    .archive { padding-bottom: max(120px, 28svh); }
     .archive[data-collapsed]:not([data-searching]) .browser { min-height: calc(100svh - var(--header-h)); }
     .archive[data-collapsed]:not([data-searching]) .archive-head { margin-block: auto; padding-bottom: 12vh; }
     .search-banner { max-height: 80vw; overflow: hidden; transition: max-height 0.35s ease, opacity 0.25s ease; }
     .archive[data-searching] .search-banner { max-height: 0; opacity: 0; }
     @media (prefers-reduced-motion: reduce) { .search-banner { transition: none; } }
     /* 검색 엔진 첫 화면처럼: 제목은 숨기고 큰 검색창 + 진입 버튼만 */
-    .archive-head { display: grid; gap: 14px; padding: 20px 16px 22px; border-bottom: 0; }
+    .archive-head { display: grid; grid-template-columns: minmax(0, 1fr); justify-content: stretch; gap: 14px; padding: 20px 16px 22px; border-bottom: 0; }
     .archive-head-title { position: absolute !important; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
     .search { max-width: none; }
     .search-label { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
