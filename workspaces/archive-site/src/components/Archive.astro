@@ -194,7 +194,7 @@ const index = days.map(toIndexEntry);
     .search-banner { margin: 0; max-width: none; border: 0; border-bottom: 1px solid var(--rule-soft); }
     /* 위쪽 여백 없이 헤더 바로 밑에 화면 폭 전체로 붙는 브라우저 창 */
     .archive { padding-top: 0; }
-    .browser { margin-inline: calc(-1 * var(--gutter)); border-width: 0 0 1px; box-shadow: 0 6px 0 var(--lavender); }
+    .browser { margin-inline: calc(-1 * var(--gutter)); border-width: 0; box-shadow: none; background: linear-gradient(#fff calc(100% - 80px), var(--cream)); }
     /* 배너를 헤더 바로 밑 맨 위에 붙이고, 주소창 줄은 배너 아래(검색창 위)로 */
     .browser { display: flex; flex-direction: column; }
     .browser-body { display: contents; }
