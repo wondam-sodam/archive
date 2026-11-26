@@ -52,23 +52,31 @@ const handleOf = (url: string) => url.replace(/^https:\/\/(www\.)?instagram\.com
   .about-note { font-size: 14px; color: var(--muted); }
 
   /* 인스타그램: 각자 색을 담은 말랑한 알약 모양 버튼 */
-  .ig-links { list-style: none; margin: 8px 0 0; padding: 0; display: flex; flex-wrap: wrap; gap: 10px; }
+  .ig-links { list-style: none; margin: 8px 0 0; padding: 0; display: flex; flex-wrap: nowrap; gap: 8px; width: max-content; max-width: 100%; }
+  .ig-links li { min-width: 0; }
   .ig-link {
     --ig-bg: #f6eef3; --ig-dot: linear-gradient(135deg, var(--lilac), #e7a6b8);
-    display: inline-flex; align-items: center; gap: 10px;
-    min-height: 52px; padding: 6px 20px 6px 6px; border-radius: 999px;
+    display: inline-flex; align-items: center; gap: 8px;
+    min-height: 44px; padding: 4px 16px 4px 4px; border-radius: 999px; white-space: nowrap;
     background: var(--ig-bg); text-decoration: none; color: var(--charcoal);
     transition: transform 0.18s ease, box-shadow 0.18s ease;
   }
   .ig-sodam { --ig-bg: #efeaf7; --ig-dot: linear-gradient(135deg, #b3a6d6, var(--lilac)); }
   .ig-seowon { --ig-bg: #edf0e6; --ig-dot: linear-gradient(135deg, #b4c19b, var(--khaki)); }
-  .ig-icon { display: grid; place-items: center; width: 40px; height: 40px; border-radius: 50%; background: var(--ig-dot); color: #fff; flex: none; }
+  .ig-icon { display: grid; place-items: center; width: 36px; height: 36px; border-radius: 50%; background: var(--ig-dot); color: #fff; flex: none; }
   .ig-text { display: grid; line-height: 1.25; }
-  .ig-label { font-size: 12px; color: var(--muted); }
-  .ig-handle { font-weight: 700; font-size: 15px; overflow-wrap: anywhere; }
+  .ig-label { font-size: 11px; color: var(--muted); }
+  .ig-handle { font-weight: 700; font-size: 14px; }
   .ig-link:hover { transform: translateY(-2px); box-shadow: 0 6px 16px rgba(126, 111, 168, 0.18); }
   .ig-link:focus-visible { outline: 2px solid var(--lilac); outline-offset: 3px; }
   @media (prefers-reduced-motion: reduce) { .ig-link { transition: none; } .ig-link:hover { transform: none; } }
 
-  @media (max-width: 640px) { .about-inner { grid-template-columns: 1fr; } .about-img { max-width: 280px; } }
+  @media (max-width: 640px) {
+    .about-inner { grid-template-columns: 1fr; } .about-img { max-width: 280px; }
+  }
+  /* 좁은 화면에서는 한 줄에 다 들어가지 않으므로 세로로 한 줄씩 */
+  @media (max-width: 860px) {
+    .ig-links { flex-direction: column; width: auto; }
+    .ig-link { width: 100%; }
+  }
 </style>
